@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.SettingsActivity">
+    tools:context=".ui.BindActivity">
 
     <include
         android:id="@+id/setting_title"
@@ -22,7 +22,7 @@
         >
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="100dp"
             android:orientation="horizontal"
             >
             <TextView
@@ -31,18 +31,16 @@
                 android:textSize="30sp"
                 android:textColor="@color/color_333333"
                 android:gravity="center_vertical"
-                android:text="切换点餐机模式"
+                android:text="当前设备ID"
                 />
-
-            <Button
-                android:id="@+id/btn_check"
-                android:layout_width="300dp"
-                android:layout_height="65dp"
-                android:layout_marginStart="100dp"
-                android:background="@drawable/btn_bg_login"
-                android:text="切换模式"
-                android:textSize="30sp"
-                android:textColor="@color/white"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="60dp"
+                android:textSize="40sp"
+                android:textColor="@color/color_333333"
+                android:gravity="center_vertical"
+                tools:text="AFADSFASDFASDFSA654"
                 />
 
         </LinearLayout>
@@ -54,23 +52,24 @@
             android:layout_marginTop="130dp"
             >
             <TextView
+                android:id="@+id/bind_state"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="30sp"
                 android:textColor="@color/color_333333"
                 android:gravity="center_vertical"
-                android:text="点餐机窗口管理"
+                android:text="当前已绑定"
                 />
 
-            <Button
-                android:id="@+id/btn_bind"
-                android:layout_width="300dp"
-                android:layout_height="65dp"
-                android:layout_marginStart="100dp"
-                android:background="@drawable/btn_bg_login"
-                android:text="窗口管理"
-                android:textSize="30sp"
-                android:textColor="@color/white"
+            <TextView
+                android:id="@+id/bind_info"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="60dp"
+                android:textSize="40sp"
+                android:textColor="@color/color_333333"
+                android:gravity="center_vertical"
+                tools:text="第一食堂 3号窗口"
                 />
 
         </LinearLayout>
@@ -79,38 +78,37 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:orientation="horizontal"
-            android:layout_marginTop="130dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="250dp"
             >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textSize="30sp"
-                android:textColor="@color/color_333333"
-                android:gravity="center_vertical"
-                android:text="切换账号/退出登录"
-                />
-
             <Button
-                android:id="@+id/btn_logout"
-                android:layout_width="300dp"
+                android:id="@+id/btn_setting"
+                android:layout_width="200dp"
                 android:layout_height="65dp"
-                android:layout_marginStart="100dp"
                 android:background="@drawable/btn_bg_login"
-                android:text="切换账号/退出"
+                android:text="设置窗口"
                 android:textSize="30sp"
                 android:textColor="@color/white"
                 />
-
+            <Button
+                android:id="@+id/btn_unbind"
+                android:layout_width="200dp"
+                android:layout_height="65dp"
+                android:layout_marginStart="60dp"
+                android:background="@drawable/btn_bg_login"
+                android:text="解除绑定"
+                android:textSize="30sp"
+                android:textColor="@color/white"
+                />
         </LinearLayout>
-
     </LinearLayout>
 
     <Button
         android:id="@+id/btn_exit"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="40dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/btn_bg_login"
