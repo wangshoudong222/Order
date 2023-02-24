@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="40dp"
     xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_vertical"
-    android:background="@drawable/title_bg">
+    android:background="@drawable/title_bg"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    >
 
     <ImageView
         android:id="@+id/title_logo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"/>
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@mipmap/icon"
+        />
 
     <TextView
         android:id="@+id/title_name"
-        android:layout_width="300dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
-        android:textSize="30sp"
+        android:layout_marginStart="10dp"
+        android:textSize="15sp"
         android:textColor="@color/white"
         android:gravity="center_vertical"
         tools:text="资阳一中 1号机"
@@ -23,9 +30,10 @@
 
     <TextView
         android:id="@+id/title_time"
-        android:layout_width="350dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
-        android:textSize="30sp"
+        android:textSize="15sp"
         android:textColor="@color/white"
         android:gravity="center_vertical"
         tools:text="2023.02.12 12:00"
@@ -33,11 +41,12 @@
 
     <Button
         android:id="@+id/title_setting"
-        android:layout_width="80dp"
-        android:layout_height="50dp"
-        android:textSize="20sp"
+        android:layout_width="40dp"
+        android:layout_height="21dp"
+        android:textSize="15sp"
         android:text="设置"
         android:textColor="@color/white"
-        android:gravity="center_vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_login_white_stroke"
         />
 </LinearLayout>

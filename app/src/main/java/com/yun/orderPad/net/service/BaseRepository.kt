@@ -3,10 +3,10 @@ package com.yun.orderPad.net.service
 import com.yun.orderPad.net.exception.DealException
 
 import com.yun.orderPad.net.exception.ResultException
-import com.win.lib_net.model.BaseModel
+import com.yun.orderPad.net.model.BaseModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import com.win.lib_net.model.NetResult
+import com.yun.orderPad.net.model.NetResult
 
 open class BaseRepository {
 
@@ -28,12 +28,12 @@ open class BaseRepository {
         errorBlock: (suspend CoroutineScope.() -> Unit)? = null
     ): NetResult<T> {
         return coroutineScope {
-            if (response.errorCode == -1) {
+            if (response.code != 1) {
                 errorBlock?.let { it() }
                 NetResult.Error(
                     ResultException(
-                        response.errorCode.toString(),
-                        response.errorMsg
+                        response.code.toString(),
+                        response.message
                     )
                 )
             } else {

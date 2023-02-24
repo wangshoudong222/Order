@@ -13,24 +13,26 @@
         layout="@layout/lagout_title" />
 
     <RelativeLayout
-        android:layout_width="700dp"
-        android:layout_height="1025dp"
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="80dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="50dp"
         android:background="@drawable/all_back"
         android:elevation="10dp"
-        >
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/set_canteen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="120dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
             android:textColor="@color/color_333333"
-            android:textSize="80sp"
-            tools:text="第一食堂"
-            />
+            android:textSize="50sp"
+            tools:text="第一食堂" />
 
         <TextView
             android:id="@+id/set_window_1"
@@ -38,94 +40,87 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100dp"
             android:textColor="@color/color_e53c1c"
-            android:layout_marginTop="200dp"
-            android:textSize="360sp"
-            tools:text="10"
-            />
+            android:textSize="220sp"
+            tools:text="10" />
 
         <TextView
             android:id="@+id/set_window_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="580dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="350dp"
             android:textColor="@color/color_e53c1c"
-            android:textSize="48sp"
-            tools:text="号窗口"
-            />
+            android:textSize="24sp"
+            tools:text="号窗口" />
 
         <TextView
-            android:id="@+id/single"
+            android:id="@+id/set_window_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true"
             android:textColor="@color/color_333333"
-            android:textSize="80sp"
-            android:text="点餐服务"
             android:layout_below="@id/set_window_2"
-            />
+            android:layout_marginTop="20dp"
+            android:textSize="50sp"
+            android:text="点餐服务" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginBottom="20dp"
+            android:layout_below="@id/set_window_3"
             android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:layout_below="@id/single"
-            >
+            android:paddingEnd="20dp">
+
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/color_999999"
-                    android:textSize="30sp"
-                    android:text="当前餐次"
-                    />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color_333333"
+                    android:text="当前餐次"
+                    android:textColor="@color/color_999999"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:textSize="60sp"
-                    tools:text="午餐"
-                    />
+                    android:textColor="@color/color_333333"
+                    android:textSize="30sp"
+                    tools:text="午餐" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:layout_weight="2"
                 android:gravity="right"
-                >
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color_999999"
-                    android:textSize="30sp"
                     android:text="开放时间"
-                    />
+                    android:textColor="@color/color_999999"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:textColor="@color/color_333333"
                     android:layout_marginTop="20dp"
-                    android:textSize="60sp"
-                    tools:text="11:00~12:00"
-                    />
+                    android:textColor="@color/color_333333"
+                    android:textSize="30sp"
+                    tools:text="11:00~12:00" />
             </LinearLayout>
 
         </LinearLayout>

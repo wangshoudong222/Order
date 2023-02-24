@@ -18,9 +18,7 @@ class RetrofitClient private constructor() {
         val instance: RetrofitClient by lazy { RetrofitClient() }
     }
 
-
     init {
-
         retrofit = Retrofit.Builder()
             .client(initClient())
             .addConverterFactory(GsonConverterFactory.create())
@@ -53,6 +51,4 @@ class RetrofitClient private constructor() {
     fun <T> create(service: Class<T>): T {
         return retrofit.create(service)
     }
-
-
 }

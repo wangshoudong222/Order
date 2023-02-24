@@ -1,3 +1,3 @@
-package com.win.lib_net.model
+package com.yun.orderPad.net.model
 
-data class BaseModel<out T>(val errorCode: Int, val errorMsg: String, val data: T)
+data class BaseModel<out T>(val code: Int, val message: String, val data: T)

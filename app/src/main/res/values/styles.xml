@@ -1,0 +1,55 @@
+<resources>
+
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowFullscreen">true</item>
+    <!-- Customize your theme here. -->
+  </style>
+
+  <style name="AnimationActivity" parent="@android:style/Animation.Activity">
+    <!--    <item name="android:activityOpenEnterAnimation">@android:anim/slide_in_left</item>-->
+    <!--    <item name="android:activityOpenExitAnimation">@android:anim/slide_out_right</item>-->
+    <!--    <item name="android:activityCloseEnterAnimation">@anim/slide_in_right</item>-->
+    <!--    <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>-->
+  </style>
+
+
+  <style name="TvDialog" parent="@android:style/Theme.Dialog">
+    <item name="android:windowTitleStyle">@null</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="android:windowSoftInputMode">adjustPan|stateUnspecified</item>
+  </style>
+
+  <style name="divider">
+    <item name="android:layout_height">0.5dp</item>
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:background">@color/color_C0C0C0</item>
+  </style>
+
+  <style name="divider_vertical">
+    <item name="android:layout_height">match_parent</item>
+    <item name="android:layout_width">0.5dp</item>
+    <item name="android:background">@color/color_C0C0C0</item>
+  </style>
+
+  <style name="dialog_toast" parent="@android:style/Theme.Holo.Dialog">
+    <!-- 是否有边框 -->
+    <item name="android:windowFrame">@null</item>
+    <!--是否在悬浮Activity之上  -->
+    <item name="android:windowIsFloating">true</item>
+    <!--标题  -->
+    <item name="android:windowNoTitle">true</item>
+    <!--阴影  -->
+    <item name="android:windowIsTranslucent">true</item>
+    <!--透明背景-->
+    <item name="android:background">@android:color/transparent</item>
+    <!--窗口背景透明-->
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <!--弹窗背景是否变暗-->
+    <item name="android:backgroundDimEnabled">false</item>
+  </style>
+
+  <style name="dialog_toast_anim" parent="android:Animation" mce_bogus="1">
+  </style>
+</resources>

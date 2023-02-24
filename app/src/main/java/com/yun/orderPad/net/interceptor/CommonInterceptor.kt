@@ -8,17 +8,15 @@ import okhttp3.Response
 class CommonInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-
         val request = chain.request()
         val builder = addHeaders(request.newBuilder())
-        val response = chain.proceed(builder)
-
-        return response
-
+        return chain.proceed(builder)
     }
 
     private fun addHeaders(builder: Request.Builder): Request {
         return builder.addHeader("Content_Type", "application/json")
-            .addHeader("charset", "UTF-8").build()
+            .addHeader("charset", "UTF-8")
+            .addHeader("deviceId", "123123")
+            .build()
     }
 }
