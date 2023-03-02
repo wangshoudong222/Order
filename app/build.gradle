@@ -56,10 +56,14 @@ android {
 
 dependencies {
 
+    implementation files('libs/abcp-api-5.2.1.202205091934_general.aar')
+    implementation files('libs/Alipay_IoTSDK.aar')
+
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation 'androidx.annotation:annotation:1.3.0'
@@ -93,4 +97,9 @@ dependencies {
     implementation 'org.msgpack:msgpack:0.6.12' //长连接消息打包
     implementation 'com.tencent:mmkv-static:1.1.2'
     implementation 'com.jeremyliao:live-event-bus-x:1.7.3'
+    implementation 'com.alibaba:fastjson:1.2.73'
+
+    implementation 'com.beust:klaxon:5.0.1'
+    implementation 'com.contrarywind:Android-PickerView:4.1.9'
+
 }

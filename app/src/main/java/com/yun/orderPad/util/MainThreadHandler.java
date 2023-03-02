@@ -23,6 +23,10 @@ public class MainThreadHandler {
         handler.postDelayed(runnable, delayMillis);
     }
 
+    public static void postDelayed(Runnable runnable, long delayMillis) {
+        handler.postDelayed(runnable, delayMillis);
+    }
+
     public static void removeCallbacks(String tag) {
         Runnable runnable = map.get(tag);
         if (runnable != null) {

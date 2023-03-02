@@ -6,11 +6,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    tools:context=".ui.ChooseModeActivity"
+    tools:context=".ui.choose.ChooseModeActivity"
     android:background="@drawable/bg_por"
     >
 
-    <include layout="@layout/lagout_title" />
+    <include
+        android:id="@+id/choose_title"
+        layout="@layout/lagout_title" />
 
     <ImageView
         android:id="@+id/logo"
@@ -27,8 +29,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/choose_btn"
-        android:layout_marginTop="40dp"
-        android:text="包餐取餐"
+        android:layout_marginTop="80dp"
+        android:text="取餐模式"
         android:textSize="30sp"
         android:textColor="@color/color_333333"
         android:elevation="10dp"
@@ -42,7 +44,7 @@
         android:layout_marginEnd="20dp"
         android:background="@drawable/choose_btn2"
         android:layout_marginTop="20dp"
-        android:text="堂食零点现结"
+        android:text="堂食零点模式"
         android:textSize="30sp"
         android:textColor="@color/color_333333"
         android:elevation="10dp"
@@ -60,7 +62,7 @@
         android:textSize="30sp"
         android:textColor="@color/color_333333"
         android:elevation="10dp"
-
+        android:visibility="gone"
         />
 
 </LinearLayout>

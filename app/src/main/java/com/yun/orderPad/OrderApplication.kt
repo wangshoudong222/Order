@@ -3,27 +3,21 @@ package com.yun.orderPad
 import android.app.ActivityManager
 import android.app.Application
 import android.os.Process
+import com.yun.orderPad.util.CommonUtils
+import com.yun.orderPad.util.sp.SpUtil
+import java.lang.reflect.InvocationTargetException
 
 class OrderApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
         BaseContext.instance.init(this)
+        initSn()
     }
 
-    /**
-     * 获取当前进程名
-     */
-    private fun getCurrentProcessName(): String? {
-        val pid = Process.myPid()
-        var processName = ""
-        val manager = applicationContext.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        for (process in manager.runningAppProcesses) {
-            if (process.pid == pid) {
-                processName = process.processName
-            }
-        }
-        return processName
+    private fun initSn() {
+        val sn = CommonUtils.getProperties("ro.serialno", "")
+        SpUtil.deviceId(sn)
     }
 
     companion object {

@@ -10,9 +10,9 @@ import com.yun.orderPad.net.model.NetResult
 
 open class BaseRepository {
 
-    suspend fun <T : Any> callRequest(
-        call: suspend () -> NetResult<T>
-    ): NetResult<T> {
+    suspend fun <T : Any?> callRequest(
+        call: suspend () -> NetResult<T?>
+    ): NetResult<T?> {
         return try {
             call()
         } catch (e: Exception) {
@@ -22,11 +22,11 @@ open class BaseRepository {
         }
     }
 
-    suspend fun <T : Any> handleResponse(
-        response: BaseModel<T>,
+    suspend fun <T : Any?> handleResponse(
+        response: BaseModel<T?>,
         successBlock: (suspend CoroutineScope.() -> Unit)? = null,
         errorBlock: (suspend CoroutineScope.() -> Unit)? = null
-    ): NetResult<T> {
+    ): NetResult<T?> {
         return coroutineScope {
             if (response.code != 1) {
                 errorBlock?.let { it() }

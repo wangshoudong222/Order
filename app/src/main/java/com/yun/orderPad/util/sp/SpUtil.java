@@ -41,6 +41,10 @@ public class SpUtil {
     return saveAndGet("token", String.class, token);
   }
 
+  public static String config(String... config) {
+    return saveAndGet("config", String.class, config);
+  }
+
   public static boolean cleanAll() {
     cacheMap.clear();
     return SPManager.getInstance().clearAll();

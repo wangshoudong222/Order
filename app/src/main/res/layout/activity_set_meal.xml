@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/bg_por"
-    tools:context=".ui.SetMealActivity">
+    tools:context=".ui.meal.SetMealActivity">
 
     <include
         android:id="@+id/set_meal_title"
@@ -40,26 +40,16 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="180dp"
             android:textColor="@color/color_e53c1c"
-            android:textSize="220sp"
-            tools:text="10" />
-
-        <TextView
-            android:id="@+id/set_window_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="350dp"
-            android:textColor="@color/color_e53c1c"
-            android:textSize="24sp"
-            tools:text="号窗口" />
+            android:textSize="85sp"
+            tools:text="8号窗口" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/set_window_2"
-            android:layout_marginTop="30dp"
+            android:layout_below="@id/set_window_1"
+            android:layout_marginTop="40dp"
             android:layout_marginBottom="20dp"
             android:orientation="horizontal"
             android:paddingStart="20dp"
@@ -79,8 +69,9 @@
                     android:textSize="15sp" />
 
                 <TextView
+                    android:id="@+id/meal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_marginTop="20dp"
                     android:textColor="@color/color_333333"
                     android:textSize="30sp"
@@ -102,8 +93,9 @@
                     android:textSize="15sp" />
 
                 <TextView
+                    android:id="@+id/time"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
                     android:textColor="@color/color_333333"
@@ -125,17 +117,17 @@
         android:layout_marginEnd="20dp"
         >
         <Button
-            android:id="@+id/btn_login"
+            android:id="@+id/btn_nfc"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="75dp"
             android:background="@drawable/scan"
             />
         <Button
-            android:id="@+id/btn_offline"
+            android:id="@+id/btn_face"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="75dp"
+            android:layout_height="78dp"
             android:layout_marginStart="50dp"
             android:background="@drawable/face"
             />

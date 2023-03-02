@@ -1,6 +1,8 @@
 package com.yun.orderPad.ui.login
 
+import android.content.Context
 import android.content.Intent
+import android.media.MediaRouter
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
@@ -8,7 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.yun.orderPad.BuildConfig
 import com.yun.orderPad.databinding.ActivityLoginBinding
 import com.yun.orderPad.ui.BaseActivity
-import com.yun.orderPad.ui.BindActivity
+import com.yun.orderPad.ui.bind.BindActivity
+import com.yun.orderPad.ui.welcome.WelcomePresentation
 import com.yun.orderPad.util.sp.SpUtil
 
 class LoginActivity : BaseActivity() {
@@ -21,7 +24,7 @@ class LoginActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        addPresentation()
         val username = binding.username
         val password = binding.password
         val btnLogin = binding.btnLogin
@@ -70,5 +73,15 @@ class LoginActivity : BaseActivity() {
 
     private fun showLoginFailed(errorString: String?) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    }
+
+    private var presentationDisplay: LoginPresentation? = null
+    private fun addPresentation(){
+        val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
+        val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
+        if (route != null && route.presentationDisplay != null) {
+            presentationDisplay = LoginPresentation(this,route.presentationDisplay)
+            presentationDisplay?.show()
+        }
     }
 }

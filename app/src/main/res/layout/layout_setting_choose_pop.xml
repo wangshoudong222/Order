@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="80dp"
+    android:padding="20dp"
+    android:background="@drawable/bg_pop_white"
+    >
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前设备ID"
+        android:textColor="@color/color_333333"
+        android:textSize="17sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/sn_no"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_gray_input"
+        android:gravity="center_vertical"
+        android:paddingStart="10dp"
+        android:textColor="@color/color_333333"
+        android:textSize="17sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        tools:text="SN12313SADFDS31" />
+
+    <TextView
+        android:id="@+id/bind_school"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="绑定的学校:"
+        android:textColor="@color/color_333333"
+        android:textSize="17sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sn_no"
+        android:layout_marginTop="30dp"
+        />
+    <TextView
+        android:id="@+id/choose_school"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_red_stroke"
+        android:gravity="center_vertical"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textColor="@color/color_333333"
+        android:textSize="17sp"
+        android:drawableRight="@drawable/right"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bind_school"
+        tools:text="实验小学" />
+
+    <TextView
+        android:id="@+id/bind_kitchen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="绑定的食堂:"
+        android:textColor="@color/color_333333"
+        android:textSize="17sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choose_school"
+        android:layout_marginTop="30dp"
+        />
+    <TextView
+        android:id="@+id/choose_kitchen"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_red_stroke"
+        android:gravity="center_vertical"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textColor="@color/color_333333"
+        android:textSize="17sp"
+        android:drawableRight="@drawable/right"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bind_kitchen"
+        tools:text="第一食堂" />
+    <TextView
+        android:id="@+id/bind_window"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="绑定的窗口:"
+        android:textColor="@color/color_333333"
+        android:textSize="17sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choose_kitchen"
+        android:layout_marginTop="30dp"
+        />
+    <TextView
+        android:id="@+id/choose_window"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_red_stroke"
+        android:gravity="center_vertical"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textColor="@color/color_333333"
+        android:textSize="17sp"
+        android:drawableRight="@drawable/right"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bind_window"
+        tools:text="第一窗口" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="20dp">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_btn_red_stroke"
+            android:textSize="17sp"
+            android:textColor="@color/color_e53c1c"
+            android:text="取消"
+            />
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_btn_red"
+            android:textSize="17sp"
+            android:textColor="@color/white"
+            android:text="确认绑定"
+            />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

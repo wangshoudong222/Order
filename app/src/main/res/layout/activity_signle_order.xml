@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/bg_por"
-    tools:context=".ui.SignleOrderActivity">
+    tools:context=".ui.order.SingleOrderActivity">
 
     <include
         android:id="@+id/set_meal_title"

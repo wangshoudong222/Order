@@ -41,12 +41,11 @@
 
     <Button
         android:id="@+id/title_setting"
-        android:layout_width="40dp"
-        android:layout_height="21dp"
-        android:textSize="15sp"
+        android:layout_width="55dp"
+        android:layout_height="28dp"
+        android:background="@drawable/bg_login_white_stroke"
+        android:gravity="center"
         android:text="设置"
         android:textColor="@color/white"
-        android:gravity="center"
-        android:background="@drawable/bg_login_white_stroke"
-        />
+        android:textSize="15sp" />
 </LinearLayout>

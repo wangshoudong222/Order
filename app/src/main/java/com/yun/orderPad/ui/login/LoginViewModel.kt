@@ -24,7 +24,7 @@ class LoginViewModel: ViewModel() {
      */
     fun login(username:String, password: String) {
         viewModelScope.launch {
-            val result: NetResult<LoginModel> = OrderRepository.instance.login(LoginRequest(username, password))
+            val result: NetResult<LoginModel?> = OrderRepository.instance.login(LoginRequest(username, password))
             if (result is NetResult.Success) {
                 _loginResult.postValue(result.data)
             } else if (result is NetResult.Error){
