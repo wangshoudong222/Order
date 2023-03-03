@@ -65,6 +65,10 @@ class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
         return callRequest(call = { requestStudentByFaceUid(getRequestBody(JSON.toJSONString(faceInfo))) })
     }
 
+    suspend fun submitMealOrder(order: MealOrder): NetResult<Boolean?> {
+        return callRequest(call = { requestSubmitMealOrder(getRequestBody(JSON.toJSONString(order))) })
+    }
+
     suspend fun listKitchen(schoolInfo: SchoolInfo): NetResult<List<KitchenInfo>?> {
         return callRequest(call = { requestListKitchen(getRequestBody(JSON.toJSONString(schoolInfo))) })
     }
@@ -133,6 +137,9 @@ class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
 
     private suspend fun requestMealMenuList(body: RequestBody) =
         handleResponse(service.create(RequestApi::class.java).getMealMenuList(body))
+
+    private suspend fun requestSubmitMealOrder(body: RequestBody) =
+        handleResponse(service.create(RequestApi::class.java).submitMealOrder(body))
 
     private fun getRequestBody(body: String): RequestBody {
         return RequestBody.create(MediaType.parse("application/json"), body)

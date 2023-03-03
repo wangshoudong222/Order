@@ -48,9 +48,9 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
             choose.add(it?.get(0))
             choose.add(it?.get(1))
         }
-//        MainThreadHandler.postDelayed({
-//            viewModel.setCommit(true)
-//        },5000)
+        MainThreadHandler.postDelayed({
+            viewModel.setCommit(true)
+        },5000)
 
     }
 

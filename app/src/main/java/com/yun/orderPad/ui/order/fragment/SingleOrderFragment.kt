@@ -38,15 +38,13 @@ class SingleOrderFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(SingleViewModel::class.java)
-        viewModel.getCurrentMeal()
-        viewModel.getConfig()
+        viewModel = ViewModelProvider(activity!!).get(SingleViewModel::class.java)
 
-        viewModel.currentMeal.observe(this) {
+        viewModel.currentMeal.observe(activity!!) {
             binding.meal.text = it?.mealTableName
             binding.time.text = it?.mealStartTime + "~" + it?.mealEndTime
         }
-        viewModel.config.observe(this) {
+        viewModel.config.observe(activity!!) {
             if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
                 binding.setCanteen.text = it.kitchenName
                 binding.setWindow1.text = it.windowName
@@ -54,7 +52,7 @@ class SingleOrderFragment : Fragment() {
         }
 
         viewModel.commit.observe(this) {
-
+            viewModel.doScan(true)
         }
     }
 

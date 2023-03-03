@@ -6,5 +6,5 @@ data class FaceInfo (
     /**
      * 人脸uid
      */
-    val faceUid: String
+    val faceUid: String?
 )

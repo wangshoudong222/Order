@@ -60,10 +60,14 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
             }
         }
 
-        viewModel.commit.observe(this) {
+        viewModel.scan.observe(this) {
             if (it == true) {
-                startActivity(Intent(this, SingleOrderActivity::class.java))
+                startScan()
             }
+        }
+
+        viewModel.student.observe(this) {
+            viewModel.submitMealOrder()
         }
     }
 
@@ -108,6 +112,9 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
             ToastUtil.show(if (success == true) "人脸识别成功" else "人脸识别失败")
         }
         LogUtil.d(SetMealActivity.TAG,if (success == true) "人脸识别成功 token:$fToken; uid:$uid" else "人脸识别失败")
+        if (success == true) {
+            viewModel.getStudentInfo(uid)
+        }
     }
 
     override fun onDestroy() {

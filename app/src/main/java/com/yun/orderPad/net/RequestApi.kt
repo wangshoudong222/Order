@@ -55,6 +55,9 @@ interface RequestApi {
     @POST("/api-jlh-bff/canteen/mealOrder/getMealMenuList")
     suspend fun getMealMenuList(@Body body: RequestBody): BaseModel<List<MealMenu>?>
 
+    @POST("/api-jlh-bff/canteen/mealOrder/submitMealOrder")
+    suspend fun submitMealOrder(@Body body: RequestBody): BaseModel<Boolean?>
+
     @POST("/api-jlh-bff/canteen/login")
     suspend fun login(@Body body: RequestBody): BaseModel<LoginModel?>
 }
