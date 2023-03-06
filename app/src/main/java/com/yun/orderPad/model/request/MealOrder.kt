@@ -1,4 +1,7 @@
 package com.yun.orderPad.model.request
+
+import com.yun.orderPad.model.result.MealMenu
+
 /**
  * 入参，点餐模式或者学校餐厅窗口信息两者必传其一
  */
@@ -6,7 +9,7 @@ data class MealOrder (
     /**
      * 零点明细
      */
-    val mealOrderDetails: List<MealOrderDetail>?,
+    val mealOrderDetails: List<MealMenu>?,
 
     /**
      * 餐次编码

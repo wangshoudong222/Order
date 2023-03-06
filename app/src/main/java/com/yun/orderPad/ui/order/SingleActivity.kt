@@ -7,22 +7,29 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import com.beust.klaxon.token.VALUE_TYPE.value
 import com.yun.orderPad.R
-import com.yun.orderPad.databinding.ActivitySetMealBinding
 import com.yun.orderPad.databinding.ActivitySingleBinding
+import com.yun.orderPad.event.ConfirmEvent
+import com.yun.orderPad.model.COMMIT_STATE
 import com.yun.orderPad.smile.IsvInfo
 import com.yun.orderPad.smile.SmileManager
 import com.yun.orderPad.ui.bind.BindActivity
 import com.yun.orderPad.ui.meal.SetMealActivity
-import com.yun.orderPad.ui.meal.SetMealViewModel
+import com.yun.orderPad.ui.order.fragment.SingleConfirmFragment
 import com.yun.orderPad.ui.order.fragment.SingleOrderFragment
+import com.yun.orderPad.ui.order.presentation.ConfirmPresentation
+import com.yun.orderPad.ui.order.presentation.SinglePresentation
 import com.yun.orderPad.ui.setting.SettingsActivity
-import com.yun.orderPad.ui.setting.SettingsPresentation
 import com.yun.orderPad.ui.test.ui.main.TestFragment
 import com.yun.orderPad.util.LogUtil
 import com.yun.orderPad.util.ToastUtil
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * 零点模式
@@ -32,13 +39,16 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
     private lateinit var binding : ActivitySingleBinding
     private lateinit var viewModel: SingleViewModel
+    private lateinit var orderFragment: SingleOrderFragment
+    private lateinit var confirmFragment: SingleConfirmFragment
     private var mSmileManager: SmileManager? = null
+    private var curPre = ORDER_PRE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySingleBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        addPresentation()
+        EventBus.getDefault().register(this)
         initView()
         initViewModel()
         initSmile()
@@ -49,7 +59,7 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         viewModel = ViewModelProvider(this).get(SingleViewModel::class.java)
         viewModel.getCurrentMeal()
         viewModel.getConfig()
-
+        viewModel.checkState(COMMIT_STATE.ORDER)
         viewModel.config.observe(this) {
             if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
                 binding.setSingleTitle.titleName.text = it.schoolName + " " + it.windowName
@@ -69,6 +79,37 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         viewModel.student.observe(this) {
             viewModel.submitMealOrder()
         }
+
+        viewModel.state.observe(this) {
+            when(it) {
+                COMMIT_STATE.ORDER -> {
+                    LogUtil.d(TAG,"正在点餐")
+                }
+
+                COMMIT_STATE.REORDER -> {
+                    LogUtil.d(TAG,"重新点餐")
+                }
+
+                COMMIT_STATE.COMMITTING -> {
+                    LogUtil.d(TAG,"正在提交")
+                }
+
+                COMMIT_STATE.SCANNING -> {
+                    LogUtil.d(TAG,"正在扫脸")
+                }
+
+                COMMIT_STATE.SUCCESS -> {
+                    ToastUtil.show("取餐成功")
+                }
+
+                COMMIT_STATE.ERROR -> {
+                    ToastUtil.show("取餐失败")
+                }
+                else -> {
+
+                }
+            }
+        }
     }
 
     private fun initView() {
@@ -79,13 +120,31 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     }
 
     private fun initFragment(savedInstanceState: Bundle?) {
+        orderFragment = SingleOrderFragment.newInstance()
+        confirmFragment = SingleConfirmFragment.newInstance()
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, SingleOrderFragment.newInstance())
+                .replace(R.id.container, orderFragment)
                 .commitNow()
         }
     }
 
+    private fun replaceFragment(fm: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, if (fm == ORDER_FRAGMENT) orderFragment else confirmFragment)
+            .commitAllowingStateLoss()
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+        if (event != null) {
+            if (curPre == ORDER_PRE && orderPre != null) {
+                return orderPre?.dispatchKeyEvent(event) == true
+            } else if (curPre == CONFIRM_PRE && confirmPre != null) {
+                return confirmPre?.dispatchKeyEvent(event) == true
+            }
+        }
+        return super.dispatchKeyEvent(event)
+    }
 
     /**
      * 人脸识别相关
@@ -117,28 +176,66 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        addPresentation(curPre)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         Log.w(SetMealActivity.TAG, "onDestroy")
         mSmileManager?.onDestroy(SetMealActivity.TYPE)
+        EventBus.getDefault().unregister(this)
     }
 
     /**
      * 副屏相关
      */
-    private var presentationDisplay: SinglePresentation? = null
+    private var orderPre: SinglePresentation? = null
+    private var confirmPre: ConfirmPresentation? = null
 
-    private fun addPresentation(){
-        val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
-        val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
-        if (route != null && route.presentationDisplay != null) {
-            presentationDisplay = SinglePresentation(this,route.presentationDisplay)
-            presentationDisplay?.setOwnerActivity(this)
-            presentationDisplay?.show()
+    private fun addPresentation(pre: String){
+        if (pre == ORDER_PRE) {
+            if (orderPre == null) {
+                val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
+                val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
+                if (route != null && route.presentationDisplay != null) {
+                    orderPre = SinglePresentation(this,route.presentationDisplay)
+                    orderPre?.setOwnerActivity(this)
+                }
+            }
+            orderPre?.show()
+        } else {
+            if (confirmPre == null) {
+                val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
+                val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
+                if (route != null && route.presentationDisplay != null) {
+                    confirmPre = ConfirmPresentation(this,route.presentationDisplay)
+                    confirmPre?.setOwnerActivity(this)
+                }
+            }
+            confirmPre?.show()
         }
+        curPre = pre
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun confirmOrder(event: ConfirmEvent) {
+        if (confirmFragment != null && confirmFragment.isAdded && confirmFragment.isVisible) {
+            return
+        }
+        replaceFragment(CONFIRM_FRAGMENT)
     }
 
     companion object {
         const val TAG = "SingleActivity"
+        const val ORDER_FRAGMENT = "ORDER_FRAGMENT"
+        const val CONFIRM_FRAGMENT = "CONFIRM_FRAGMENT"
+        const val ORDER_PRE = "ORDER_PRE"
+        const val CONFIRM_PRE = "CONFIRM_PRE"
     }
 }

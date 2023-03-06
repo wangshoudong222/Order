@@ -5,6 +5,7 @@ import com.yun.orderPad.model.result.*
 import com.yun.orderPad.net.model.BaseModel
 import okhttp3.RequestBody
 import retrofit2.http.*
+import java.math.BigDecimal
 
 
 interface RequestApi {
@@ -57,6 +58,10 @@ interface RequestApi {
 
     @POST("/api-jlh-bff/canteen/mealOrder/submitMealOrder")
     suspend fun submitMealOrder(@Body body: RequestBody): BaseModel<Boolean?>
+
+
+    @POST("/api-jlh-bff/canteen/student/getStudentAccount")
+    suspend fun getStudentAccount(@Body body: RequestBody): BaseModel<BigDecimal?>
 
     @POST("/api-jlh-bff/canteen/login")
     suspend fun login(@Body body: RequestBody): BaseModel<LoginModel?>

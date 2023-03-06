@@ -52,4 +52,20 @@
 
   <style name="dialog_toast_anim" parent="android:Animation" mce_bogus="1">
   </style>
+
+  <style name="recy_vertical_style">
+    <!--滚动条宽度-->
+    <item name="android:scrollbarSize">10dp</item>
+    <!--滚动条方向-->
+    <item name="android:scrollbars">vertical</item>
+    <!--滚动条是否滑动-->
+    <item name="android:fastScrollEnabled">true</item>
+    <!--滚动条不消失-->
+    <item name="android:fadeScrollbars">false</item>
+    <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
+    <!--滚动条滑动块颜色-->
+    <item name="android:scrollbarThumbVertical">@drawable/bg_srcollbar_red</item>
+    <!--滚动条默认颜色-->
+    <item name="android:scrollbarTrackVertical">@drawable/bg_srcollbar_red</item>
+  </style>
 </resources>

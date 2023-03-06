@@ -1,5 +1,7 @@
 package com.yun.orderPad.model.request
 
+import java.math.BigDecimal
+
 data class MealOrderDetail (
     /**
      * 餐点id
@@ -13,7 +15,7 @@ data class MealOrderDetail (
     /**
      * 价格，BigDecimal
      */
-    val price: Double?,
+    val price: BigDecimal?,
 
     /**
      * 数量

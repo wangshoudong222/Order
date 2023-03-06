@@ -1,33 +1,45 @@
 package com.yun.orderPad.model.result
 
+import java.math.BigDecimal
+
 data class MealMenu(
     /**
      * 餐点url
      */
-    val dishPicUrl: String,
+    val dishPicUrl: String?,
 
     /**
      * 餐点id
      */
-    val dishSkuId: String,
+    val dishSkuId: String?,
+    /**
+     * 快捷点餐CODE
+     */
+    val dishCode: String?,
 
     /**
      * 餐点名称
      */
-    val dishSkuName: String,
+    val dishSkuName: String?,
 
     /**
      * 是否清真
      */
-    val isHalal: Boolean,
+    val isHalal: Boolean?,
 
     /**
      * 餐次名称
      */
-    val mealTableName: String,
+    val mealTableName: String?,
 
     /**
      * 价格，BigDecimal
      */
-    val price: Double
+    val price: BigDecimal?,
+
+    var checked: Boolean?,
+
+    var fouces: Boolean?,
+
+    var quantity: Long? = 0
 )

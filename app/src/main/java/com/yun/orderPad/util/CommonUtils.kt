@@ -1,5 +1,6 @@
 package com.yun.orderPad.util
 
+import android.content.Context
 import java.lang.reflect.InvocationTargetException
 
 object CommonUtils {
@@ -19,5 +20,10 @@ object CommonUtils {
             e.printStackTrace()
         }
         return def
+    }
+
+    fun dp2px(context: Context, dipValue: Float): Int {
+        val scale = context.resources.displayMetrics.density
+        return (dipValue * scale + 0.5f).toInt()
     }
 }

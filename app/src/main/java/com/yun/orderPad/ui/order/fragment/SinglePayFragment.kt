@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yun.orderPad.R
 import com.yun.orderPad.databinding.ActivitySingleBinding
+import com.yun.orderPad.databinding.FragmentPayBinding
 import com.yun.orderPad.databinding.FragmentSinglOrderBinding
 import com.yun.orderPad.ui.bind.BindActivity
 import com.yun.orderPad.ui.order.SingleOrderActivity
@@ -28,9 +29,9 @@ import com.yun.orderPad.view.ConfirmAdapter
 import com.yun.orderPad.view.OrderAdapter
 import com.yun.orderPad.view.SpaceItemDecoration
 
-class SingleOrderFragment : Fragment() {
+class SinglePayFragment : Fragment() {
 
-    private lateinit var binding : FragmentSinglOrderBinding
+    private lateinit var binding : FragmentPayBinding
     private lateinit var viewModel: SingleViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,22 +44,12 @@ class SingleOrderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentSinglOrderBinding.inflate(layoutInflater)
+        binding = FragmentPayBinding.inflate(layoutInflater)
         return binding.root
     }
     private fun initViewModel() {
         viewModel = ViewModelProvider(activity!!).get(SingleViewModel::class.java)
 
-        viewModel.currentMeal.observe(activity!!) {
-            binding.meal.text = it?.mealTableName
-            binding.time.text = it?.mealStartTime + "~" + it?.mealEndTime
-        }
-        viewModel.config.observe(activity!!) {
-            if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
-                binding.setCanteen.text = it.kitchenName
-                binding.setWindow1.text = it.windowName
-            }
-        }
     }
 
     private fun initView() {
@@ -66,7 +57,7 @@ class SingleOrderFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance() = SingleOrderFragment()
+        fun newInstance() = SinglePayFragment()
     }
 
 }

@@ -1,19 +1,21 @@
 package com.yun.orderPad.ui.order
 
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alibaba.fastjson.JSON
+import com.yun.orderPad.model.COMMIT_STATE
 import com.yun.orderPad.model.request.*
 import com.yun.orderPad.model.result.*
 import com.yun.orderPad.net.OrderRepository
 import com.yun.orderPad.net.model.NetResult
 import com.yun.orderPad.util.LogUtil
-import com.yun.orderPad.util.ToastUtil
 import com.yun.orderPad.util.sp.SpUtil
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 class SingleViewModel : ViewModel() {
 
@@ -29,20 +31,37 @@ class SingleViewModel : ViewModel() {
     private val _student = MutableLiveData<Student?>()
     val student: LiveData<Student?> = _student
 
+    private val _sum = MutableLiveData<String?>()
+    val sum: LiveData<String?> = _sum
+
     private val _listMenu = MutableLiveData<List<MealMenu>?>()
     val listMenu: LiveData<List<MealMenu>?> = _listMenu
 
-    private val _choosed = MutableLiveData<List<MealMenu>?>()
-    val choosed: LiveData<List<MealMenu>?> = _choosed
-
-    private val _commit = MutableLiveData<Boolean>()
-    val commit: LiveData<Boolean?> = _commit
+    private val _confirmOrder = MutableLiveData<List<MealMenu>?>()
+    val confirmOrder: LiveData<List<MealMenu>?> = _confirmOrder
 
     private val _scan = MutableLiveData<Boolean>()
     val scan: LiveData<Boolean?> = _scan
 
-    fun setCommit(boolean: Boolean) {
-       _commit.postValue(boolean)
+    private val _commitState = MutableLiveData<COMMIT_STATE>()
+    val state: LiveData<COMMIT_STATE?> = _commitState
+
+    private val _totalMeals= MutableLiveData<Long?>()
+    val totalMeals: LiveData<Long?> = _totalMeals
+
+    private val _total = MutableLiveData<BigDecimal?>()
+    val total: LiveData<BigDecimal?> = _total
+
+    fun setTotal(bigDecimal: BigDecimal?) {
+        _total.postValue(bigDecimal)
+    }
+
+    fun setTotalMeal(long: Long?) {
+        _totalMeals.postValue(long)
+    }
+
+    fun confirmOrder(list: List<MealMenu>?) {
+       _confirmOrder.postValue(list)
     }
 
     fun doScan(boolean: Boolean) {
@@ -59,6 +78,10 @@ class SingleViewModel : ViewModel() {
         }
     }
 
+    fun checkState(state: COMMIT_STATE) {
+        _commitState.postValue(state)
+    }
+
     /**
      * 获取当前餐次信息
      */
@@ -67,15 +90,10 @@ class SingleViewModel : ViewModel() {
             val result: NetResult<Meal?> = OrderRepository.instance.getCurrentMeal()
             if (result is NetResult.Success) {
                 if (result.data != null) {
-
-                    val mode = Meal("17:00","11:00","午餐","lunch")
-                    _currentMeal.postValue(mode)
-//                    val meal = result.data
-//                    LogUtil.d(TAG,"getCurrentMeal ${JSON.toJSONString(meal)}")
-//                    _currentMeal.postValue(meal)
+                    val meal = result.data
+                    LogUtil.d(TAG,"getCurrentMeal ${JSON.toJSONString(meal)}")
+                    _currentMeal.postValue(meal)
                 } else {
-                    val mode = Meal("23:00","18:00","晚餐","dinner")
-                    _currentMeal.postValue(mode)
                     LogUtil.d("未获取到当前餐次信息")
                 }
             } else if (result is NetResult.Error){
@@ -130,20 +148,13 @@ class SingleViewModel : ViewModel() {
      */
     fun submitMealOrder() {
         viewModelScope.launch {
-            val list = mutableListOf<MealOrderDetail>()
-//            choosed.value?.get(0)?.let {
-//                list.add(MealOrderDetail(it.dishSkuId,it.dishSkuName,it.price, 2))
-//            }
-//            choosed.value?.get(1)?.let {
-//                list.add(MealOrderDetail(it.dishSkuId,it.dishSkuName,it.price, 2))
-//            }
-            list.add(MealOrderDetail(listMenu.value?.get(0)?.dishSkuId,listMenu.value?.get(0)?.dishSkuName,listMenu.value?.get(0)?.price, 2))
-            list.add(MealOrderDetail(listMenu.value?.get(1)?.dishSkuId,listMenu.value?.get(1)?.dishSkuName,listMenu.value?.get(1)?.price, 2))
-            //无餐次ID
-            val mealOrder = MealOrder(list, currentMeal.value?.mealTableCode, currentMeal.value?.mealTableName,student.value?.id)
+            val mealOrder = MealOrder(confirmOrder.value, currentMeal.value?.mealTableCode,
+                currentMeal.value?.mealTableName,student.value?.id)
+            LogUtil.d(TAG,"submitMealOrder mealOrder: ${JSON.toJSONString(mealOrder)}")
             val result: NetResult<Boolean?> = OrderRepository.instance.submitMealOrder(mealOrder)
             if (result is NetResult.Success) {
                 if (result.data != null && result.data == true) {
+                    checkState(COMMIT_STATE.SUCCESS)
                     LogUtil.d(TAG,"submitMealOrder ${JSON.toJSONString(result.data)}")
                     LogUtil.d("取餐成功")
                 } else {
@@ -151,6 +162,21 @@ class SingleViewModel : ViewModel() {
                 }
             } else if (result is NetResult.Error){
                 LogUtil.d(TAG,"getCurrentMeal ${result.exception}")
+                checkState(COMMIT_STATE.ERROR)
+            }
+        }
+    }
+
+     fun getStudentAccount() {
+        viewModelScope.launch {
+            val result: NetResult<BigDecimal?> = OrderRepository.instance.getStudentAccount(StudentRequest(student.value?.id))
+            if (result is NetResult.Success) {
+                if (result.data != null) {
+                    _sum.postValue(result.data.toString())
+                    LogUtil.d("getStudentAccount:${result.data}")
+                }
+            } else if (result is NetResult.Error){
+                LogUtil.d(TAG,"getStudentAccount ${result.exception}")
             }
         }
     }
@@ -179,7 +205,18 @@ class SingleViewModel : ViewModel() {
             }
         }
     }
-    
+
+    fun getMenuByCode(code: String): Int{
+        var result = -1
+        _listMenu.value?.forEachIndexed { index, mealMenu ->
+            if (code == mealMenu.dishCode) {
+                result = index
+                return@forEachIndexed
+            }
+        }
+        return result
+    }
+
     companion object {
         const val TAG = "SingleViewModel"
     }

@@ -9,6 +9,7 @@ import com.yun.orderPad.net.service.BaseRepository
 import com.yun.orderPad.net.service.RetrofitClient
 import okhttp3.MediaType
 import okhttp3.RequestBody
+import java.math.BigDecimal
 
 
 class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
@@ -89,6 +90,10 @@ class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
         return callRequest(call = { requestMealMenuList(getRequestBody(JSON.toJSONString(request))) })
     }
 
+    suspend fun getStudentAccount(request: StudentRequest): NetResult<BigDecimal?> {
+        return callRequest(call = { requestStudentAccount(getRequestBody(JSON.toJSONString(request))) })
+    }
+
 
     private suspend fun requestDeviceConfig() =
         handleResponse(service.create(RequestApi::class.java).getDeviceConfig())
@@ -140,6 +145,9 @@ class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
 
     private suspend fun requestSubmitMealOrder(body: RequestBody) =
         handleResponse(service.create(RequestApi::class.java).submitMealOrder(body))
+
+    private suspend fun requestStudentAccount(body: RequestBody) =
+        handleResponse(service.create(RequestApi::class.java).getStudentAccount(body))
 
     private fun getRequestBody(body: String): RequestBody {
         return RequestBody.create(MediaType.parse("application/json"), body)
