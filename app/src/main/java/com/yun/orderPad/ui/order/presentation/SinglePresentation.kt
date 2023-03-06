@@ -4,6 +4,7 @@ import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
 import android.view.Display
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
@@ -12,10 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yun.orderPad.databinding.ActivityPSingleBinding
 import com.yun.orderPad.event.ConfirmEvent
 import com.yun.orderPad.model.COMMIT_STATE
+import com.yun.orderPad.ui.order.ErrorPop
+import com.yun.orderPad.ui.order.ErrorPop1
 import com.yun.orderPad.ui.order.SingleActivity
 import com.yun.orderPad.ui.order.SingleViewModel
 import com.yun.orderPad.util.CommonUtils
 import com.yun.orderPad.util.LogUtil
+import com.yun.orderPad.util.MainThreadHandler
 import com.yun.orderPad.util.ToastUtil
 import com.yun.orderPad.view.OrderAdapter
 import com.yun.orderPad.view.SpaceItemDecoration
@@ -29,6 +33,7 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
     private lateinit var viewModel: SingleViewModel
     private lateinit var activity: SingleActivity
     private var adapter:OrderAdapter? = null
+    private var pop:ErrorPop1? = null
     private var focusIndex = 0
     private var codeInput = StringBuilder()
 
@@ -81,7 +86,14 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
                 }
 
                 COMMIT_STATE.SCANNING -> {
-                    LogUtil.d(SingleActivity.TAG,"正在扫脸")
+                    LogUtil.d(TAG,"正在扫脸")
+                    binding.pb.visibility = View.VISIBLE
+                }
+
+                COMMIT_STATE.SCAN_ERROR -> {
+                    LogUtil.d(TAG,"扫脸失败")
+                    binding.pb.visibility = View.GONE
+                    showErrorPop()
                 }
 
                 COMMIT_STATE.SUCCESS -> {
@@ -99,7 +111,25 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
                 }
             }
         }
+    }
 
+
+    private fun showErrorPop() {
+        if (pop == null) {
+            pop = ErrorPop1("测试展示",activity)
+        }
+
+        pop?.showAtLocation(binding.root,Gravity.CENTER,0,0)
+
+        MainThreadHandler.postDelayed({
+            dismissPop()
+        },5000)
+    }
+
+    private fun dismissPop() {
+        if (pop?.isShowing == true) {
+            pop?.dismiss()
+        }
     }
 
     private fun initShow() {
@@ -141,6 +171,8 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
             }
         }
     }
+
+
     @Synchronized
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         LogUtil.d(TAG,"keyCode: $keyCode")

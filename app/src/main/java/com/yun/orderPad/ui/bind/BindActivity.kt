@@ -1,11 +1,14 @@
 package com.yun.orderPad.ui.bind
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.yun.orderPad.databinding.ActivityBindBinding
+import com.yun.orderPad.ui.choose.ChooseModeActivity
+import com.yun.orderPad.ui.login.LoginActivity
 import com.yun.orderPad.util.sp.SpUtil
 
 class BindActivity : AppCompatActivity() {
@@ -72,6 +75,10 @@ class BindActivity : AppCompatActivity() {
         }
 
         binding.btnExit.setOnClickListener {
+            val data = intent.getStringExtra("data")
+            if (data == LoginActivity.START && viewModel.configRequest.value == true) {
+                startActivity(Intent(this, ChooseModeActivity::class.java))
+            }
             this.finish()
         }
 

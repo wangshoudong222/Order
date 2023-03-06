@@ -40,11 +40,17 @@ class SingleViewModel : ViewModel() {
     private val _confirmOrder = MutableLiveData<List<MealMenu>?>()
     val confirmOrder: LiveData<List<MealMenu>?> = _confirmOrder
 
+    private val _commitState = MutableLiveData<COMMIT_STATE>()
+    val state: LiveData<COMMIT_STATE?> = _commitState
+
+    private val _errorMsg = MutableLiveData<String?>()
+    val errorMsg: LiveData<String?> = _errorMsg
+
     private val _scan = MutableLiveData<Boolean>()
     val scan: LiveData<Boolean?> = _scan
 
-    private val _commitState = MutableLiveData<COMMIT_STATE>()
-    val state: LiveData<COMMIT_STATE?> = _commitState
+    private val _scanError = MutableLiveData<String?>()
+    val scanError: LiveData<String?> = _scanError
 
     private val _totalMeals= MutableLiveData<Long?>()
     val totalMeals: LiveData<Long?> = _totalMeals
@@ -58,6 +64,14 @@ class SingleViewModel : ViewModel() {
 
     fun setTotalMeal(long: Long?) {
         _totalMeals.postValue(long)
+    }
+
+    private fun setErrorMsg(errorMsg: String?) {
+        _errorMsg.postValue(errorMsg)
+    }
+
+    fun setScanErrorMsg(scanError: String?) {
+        _scanError.postValue(scanError)
     }
 
     fun confirmOrder(list: List<MealMenu>?) {
@@ -152,22 +166,22 @@ class SingleViewModel : ViewModel() {
                 currentMeal.value?.mealTableName,student.value?.id)
             LogUtil.d(TAG,"submitMealOrder mealOrder: ${JSON.toJSONString(mealOrder)}")
             val result: NetResult<Boolean?> = OrderRepository.instance.submitMealOrder(mealOrder)
-            if (result is NetResult.Success) {
-                if (result.data != null && result.data == true) {
-                    checkState(COMMIT_STATE.SUCCESS)
-                    LogUtil.d(TAG,"submitMealOrder ${JSON.toJSONString(result.data)}")
-                    LogUtil.d("取餐成功")
-                } else {
-                    LogUtil.d("取餐失败")
-                }
+            if (result is NetResult.Success && result.data == true) {
+                checkState(COMMIT_STATE.SUCCESS)
+                LogUtil.d("取餐成功")
             } else if (result is NetResult.Error){
+                getStudentAccount()
                 LogUtil.d(TAG,"getCurrentMeal ${result.exception}")
                 checkState(COMMIT_STATE.ERROR)
+                setErrorMsg(result.exception.msg)
             }
         }
     }
 
-     fun getStudentAccount() {
+    /**
+     * 获取学生余额
+     */
+    private fun getStudentAccount() {
         viewModelScope.launch {
             val result: NetResult<BigDecimal?> = OrderRepository.instance.getStudentAccount(StudentRequest(student.value?.id))
             if (result is NetResult.Success) {
@@ -195,11 +209,10 @@ class SingleViewModel : ViewModel() {
                         SpUtil.config(JSON.toJSONString(config))
                         _config.postValue(config)
                         _configRequest.postValue(true)
+                        return@launch
                     }
-                } else {
-                    _configRequest.postValue(false)
                 }
-
+                _configRequest.postValue(false)
             } else if (result is NetResult.Error){
                 LogUtil.d(TAG,"getConfig ${result.exception}")
             }
@@ -215,6 +228,21 @@ class SingleViewModel : ViewModel() {
             }
         }
         return result
+    }
+
+
+    fun reOrder() {
+        getConfig()
+        getCurrentMeal()
+        getMealMenuList()
+        _student.postValue(null)
+        _sum.postValue(null)
+        _confirmOrder.postValue(null)
+        _scan.postValue(false)
+        _errorMsg.postValue(null)
+        _totalMeals.postValue(null)
+        _total.postValue(null)
+        _commitState.postValue(COMMIT_STATE.ORDER)
     }
 
     companion object {

@@ -58,10 +58,6 @@ class ChooseModeActivity : AppCompatActivity() {
             startActivity(Intent(this, if (MODE_TSLDXJ == it?.orderMode) SingleActivity::class.java else SetMealActivity::class.java))
             this.finish()
         }
-
-        MainThreadHandler.postDelayed({
-            startActivity(Intent(this, SingleActivity::class.java))
-        },1000)
     }
 
     private fun initView() {

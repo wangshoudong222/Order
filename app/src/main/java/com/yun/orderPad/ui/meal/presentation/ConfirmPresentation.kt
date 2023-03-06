@@ -1,4 +1,4 @@
-package com.yun.orderPad.ui.order.presentation
+package com.yun.orderPad.ui.meal.presentation
 
 import android.app.Presentation
 import android.content.Context
@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.yun.orderPad.R
 import com.yun.orderPad.databinding.ActivityPConfirmBinding
 import com.yun.orderPad.model.COMMIT_STATE
@@ -20,7 +19,6 @@ import com.yun.orderPad.ui.order.SingleViewModel
 import com.yun.orderPad.util.CommonUtils
 import com.yun.orderPad.util.LogUtil
 import com.yun.orderPad.view.OrderShowAdapter
-import com.yun.orderPad.view.SpaceItemDecoration
 
 /**
  * 取餐完成或取餐失败副屏

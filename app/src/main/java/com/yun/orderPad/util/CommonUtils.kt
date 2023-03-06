@@ -2,6 +2,8 @@ package com.yun.orderPad.util
 
 import android.content.Context
 import java.lang.reflect.InvocationTargetException
+import java.text.ParseException
+import java.text.SimpleDateFormat
 
 object CommonUtils {
 
@@ -25,5 +27,29 @@ object CommonUtils {
     fun dp2px(context: Context, dipValue: Float): Int {
         val scale = context.resources.displayMetrics.density
         return (dipValue * scale + 0.5f).toInt()
+    }
+
+
+    /**
+     * @param timeMillis 时间戳字符串
+     * @return yyyy-MM-dd HH:mm:ss
+     */
+    fun formatToDate(timeMillis: Long): String? {
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        return simpleDateFormat.format(timeMillis)
+    }
+
+    /**
+     * @param timestamp 时间戳字符串
+     * @return yyyy-MM-dd HH:mm:ss
+     */
+    fun formatToDateTime(timestamp: String?): Long {
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        try {
+            return simpleDateFormat.parse(timestamp).time
+        } catch (e: ParseException) {
+            e.printStackTrace()
+        }
+        return 0
     }
 }

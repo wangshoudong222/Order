@@ -5,9 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.yun.orderPad.R
 import com.yun.orderPad.databinding.FragmentSingleConfirmBinding
 import com.yun.orderPad.event.CancelEvent
 import com.yun.orderPad.ui.order.SingleViewModel
@@ -18,6 +21,9 @@ import com.yun.orderPad.view.SpaceItemDecoration
 import org.greenrobot.eventbus.EventBus
 import java.math.BigDecimal
 
+/**
+ * 提交订单
+ */
 class SingleConfirmFragment : Fragment() {
 
     private lateinit var binding : FragmentSingleConfirmBinding
@@ -69,9 +75,10 @@ class SingleConfirmFragment : Fragment() {
     private fun initAdapter() {
         if (adapter == null) {
             adapter = ConfirmAdapter(activity!!, viewModel.confirmOrder.value)
-            val spaceItemDecoration = SpaceItemDecoration(CommonUtils.dp2px(activity!!, 10f))
+            val dividerItemDecoration = DividerItemDecoration(context, LinearLayout.VERTICAL)
+            dividerItemDecoration.setDrawable(activity!!.getDrawable(R.drawable.item_white)!!)
             binding.rv.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-            binding.rv.addItemDecoration(spaceItemDecoration)
+            binding.rv.addItemDecoration(dividerItemDecoration)
             binding.rv.adapter = adapter
         }
     }

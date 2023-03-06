@@ -1,4 +1,4 @@
-package com.yun.orderPad.ui.order.fragment
+package com.yun.orderPad.ui.meal.fragment
 
 import android.os.Bundle
 import android.text.TextUtils
@@ -7,16 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import com.yun.orderPad.R
+import com.yun.orderPad.databinding.FragmentMealOrderBinding
 import com.yun.orderPad.databinding.FragmentSinglOrderBinding
+import com.yun.orderPad.ui.meal.SetMealViewModel
 import com.yun.orderPad.ui.order.SingleViewModel
+import com.yun.orderPad.ui.order.fragment.SingleOrderFragment
 
-/**
- * 等待点餐
- */
-class SingleOrderFragment : Fragment() {
+class MealOrderFragment : Fragment() {
 
-    private lateinit var binding : FragmentSinglOrderBinding
-    private lateinit var viewModel: SingleViewModel
+    private lateinit var binding : FragmentMealOrderBinding
+    private lateinit var viewModel: SetMealViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,17 +29,18 @@ class SingleOrderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentSinglOrderBinding.inflate(layoutInflater)
+        binding = FragmentMealOrderBinding.inflate(layoutInflater)
         return binding.root
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(activity!!).get(SingleViewModel::class.java)
+        viewModel = ViewModelProvider(activity!!).get(SetMealViewModel::class.java)
 
         viewModel.currentMeal.observe(activity!!) {
             binding.meal.text = it?.mealTableName
             binding.time.text = it?.mealStartTime + "~" + it?.mealEndTime
         }
+
         viewModel.config.observe(activity!!) {
             if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
                 binding.setCanteen.text = it.kitchenName
@@ -48,11 +50,13 @@ class SingleOrderFragment : Fragment() {
     }
 
     private fun initView() {
-
+        binding.btnScan.setOnClickListener {
+            viewModel.doScan(true)
+        }
     }
 
     companion object {
-        fun newInstance() = SingleOrderFragment()
+        fun newInstance() = MealOrderFragment()
     }
 
 }

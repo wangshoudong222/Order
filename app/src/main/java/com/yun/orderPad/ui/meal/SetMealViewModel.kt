@@ -6,10 +6,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alibaba.fastjson.JSON
+import com.yun.orderPad.model.ErrorState
 import com.yun.orderPad.model.request.ConfigInfo
+import com.yun.orderPad.model.request.FaceInfo
+import com.yun.orderPad.model.request.MealRequest
+import com.yun.orderPad.model.request.Pickup
 import com.yun.orderPad.model.result.*
 import com.yun.orderPad.net.OrderRepository
+import com.yun.orderPad.net.exception.ResultException
 import com.yun.orderPad.net.model.NetResult
+import com.yun.orderPad.ui.order.SingleViewModel
 import com.yun.orderPad.util.LogUtil
 import com.yun.orderPad.util.ToastUtil
 import com.yun.orderPad.util.sp.SpUtil
@@ -23,11 +29,37 @@ class SetMealViewModel : ViewModel() {
     private val _configRequest = MutableLiveData<Boolean>()
     val configRequest: LiveData<Boolean> = _configRequest
 
-    private val _mode = MutableLiveData<OrderMode?>()
-    val mode : LiveData<OrderMode?> = _mode
-
     private val _currentMeal = MutableLiveData<Meal?>()
     val currentMeal: LiveData<Meal?> = _currentMeal
+
+    private val _student = MutableLiveData<Student?>()
+    val student: LiveData<Student?> = _student
+
+    private val _orders = MutableLiveData<List<OrderInfo>?>()
+    val orders: LiveData<List<OrderInfo>?> = _orders
+
+    private val _orderError = MutableLiveData<ResultException?>()
+    val orderError: LiveData<ResultException?> = _orderError
+
+    private val _confirmState = MutableLiveData<Boolean?>()
+    val confirmState: LiveData<Boolean?> = _confirmState
+
+    private val _confirmError = MutableLiveData<ResultException?>()
+    val confirmError: LiveData<ResultException?> = _confirmError
+
+    private val _scan = MutableLiveData<Boolean>()
+    val scan: LiveData<Boolean?> = _scan
+
+    private val _scanError = MutableLiveData<String?>()
+    val scanError: LiveData<String?> = _scanError
+
+    fun setScanErrorMsg(scanError: String?) {
+        _scanError.postValue(scanError)
+    }
+
+    fun doScan(boolean: Boolean) {
+        _scan.postValue(boolean)
+    }
 
     fun getConfig() {
         val s = SpUtil.config()
@@ -39,6 +71,9 @@ class SetMealViewModel : ViewModel() {
         }
     }
 
+    /**
+     * 获取餐次信息
+     */
     fun getCurrentMeal() {
         viewModelScope.launch {
             val result: NetResult<Meal?> = OrderRepository.instance.getCurrentMeal()
@@ -80,7 +115,70 @@ class SetMealViewModel : ViewModel() {
             }
         }
     }
-    
+
+    /**
+     * 获取学生信息
+     */
+    fun getStudentInfo(faceId: String?) {
+        viewModelScope.launch {
+            val result: NetResult<Student?> = OrderRepository.instance.getStudentByFaceUid(FaceInfo(faceId))
+            if (result is NetResult.Success) {
+                if (result.data != null) {
+                    val student = result.data
+                    LogUtil.d(SingleViewModel.TAG,"getStudentInfo ${JSON.toJSONString(student)}")
+                    _student.postValue(student)
+                } else {
+                    LogUtil.d("未获取到该学生信息")
+                }
+            } else if (result is NetResult.Error){
+                LogUtil.d(SingleViewModel.TAG,"getStudentInfo ${result.exception}")
+            }
+        }
+    }
+
+    /**
+     * 获取学生包餐信息
+     */
+    fun getStudentPackageMeal() {
+        viewModelScope.launch {
+            val result: NetResult<List<OrderInfo>?> = OrderRepository.instance.getStudentPackageMeal(
+                MealRequest(currentMeal.value?.mealTableCode, student.value?.id))
+            if (result is NetResult.Success) {
+                if (result.data != null) {
+                    val orders = result.data
+                    LogUtil.d(TAG,"orders ${JSON.toJSONString(orders)}")
+                    _orders.postValue(orders)
+                    return@launch
+                }
+                _orderError.postValue(ResultException("0","获取包餐信息为空"))
+            } else if (result is NetResult.Error){
+                _orderError.postValue(result.exception)
+                LogUtil.d(SingleViewModel.TAG,"getStudentInfo ${result.exception}")
+            }
+        }
+    }
+
+    /**
+     * 提交学生包餐信息
+     */
+    fun confirmPickUp() {
+        viewModelScope.launch {
+            val pickOder = orders.value?.map { it.orderNo }
+            val result: NetResult<Boolean?> = OrderRepository.instance.confirmPickUp(Pickup(pickOder,student.value?.id))
+            if (result is NetResult.Success) {
+                if (result.data != null && result.data == true) {
+                    LogUtil.d(TAG,"confirmPickUp 成功")
+                    _confirmState.postValue(result.data)
+                    return@launch
+                }
+                _confirmError.postValue(ResultException("0","提交学生包餐信息错误"))
+            } else if (result is NetResult.Error){
+                _confirmError.postValue(result.exception)
+                LogUtil.d(SingleViewModel.TAG,"提交学生包餐信息错误 ${result.exception}")
+            }
+        }
+    }
+
     companion object {
         const val TAG = "SetMealViewModel"
     }

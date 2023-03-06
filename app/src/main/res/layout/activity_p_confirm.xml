@@ -83,40 +83,80 @@
                 android:orientation="horizontal"
                 >
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:background="@color/white"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
                     >
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#00B578"
-                        android:text="支付成功"
-                        android:textSize="56sp"
-                        android:layout_marginTop="20dp"
-                        />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/color_333333"
-                        android:text="支付金额"
-                        android:textSize="22sp"
-                        android:layout_marginTop="10dp"
-                        />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/color_333333"
-                        tools:text="¥50.00"
-                        android:textSize="56sp"
-                        />
+                    <LinearLayout
+                        android:id="@+id/center_success"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#00B578"
+                            android:text="支付成功"
+                            android:textSize="56sp"
+                            android:layout_marginTop="20dp"
+                            />
 
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/color_333333"
+                            android:text="支付金额"
+                            android:textSize="22sp"
+                            android:layout_marginTop="10dp"
+                            />
+                        <TextView
+                            android:id="@+id/pay_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/color_333333"
+                            tools:text="¥50.00"
+                            android:textSize="56sp"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/center_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:visibility="gone"
+                        >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/color_e53c1c"
+                            android:text="支付失败"
+                            android:textSize="56sp"
+                            android:layout_marginTop="20dp"
+                            />
+
+                        <TextView
+                            android:id="@+id/error_msg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/color_333333"
+                            android:text="支付金额"
+                            android:textSize="22sp"
+                            android:layout_marginTop="10dp"
+                            />
+                    </LinearLayout>
+
+                </FrameLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/order_rv"
@@ -141,49 +181,56 @@
                 >
 
                 <LinearLayout
+                    android:id="@+id/bottom_success"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="10dp"
+                    android:orientation="horizontal"
                     >
-
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="支付渠道"
-                        android:textColor="@color/color_999999"
-                        android:textSize="22sp" />
+                        android:orientation="vertical"
+                        android:layout_margin="10dp"
+                        >
 
-                    <TextView
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="支付渠道"
+                            android:textColor="@color/color_999999"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="余额"
+                            android:textColor="@color/color_333333"
+                            android:textSize="24sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="余额"
-                        android:textColor="@color/color_333333"
-                        android:textSize="24sp" />
+                        android:orientation="vertical"
+                        android:layout_margin="10dp"
+                        >
 
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="支付时间"
+                            android:textColor="@color/color_999999"
+                            android:textSize="22sp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="10dp"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="支付时间"
-                        android:textColor="@color/color_999999"
-                        android:textSize="22sp" />
-
-                    <TextView
-                        android:id="@+id/time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="2022.01.12 14:20:20"
-                        android:textColor="@color/color_333333"
-                        android:textSize="24sp" />
+                        <TextView
+                            android:id="@+id/time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="2022.01.12 14:20:20"
+                            android:textColor="@color/color_333333"
+                            android:textSize="24sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <Button

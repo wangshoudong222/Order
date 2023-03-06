@@ -11,6 +11,7 @@ import com.yun.orderPad.BuildConfig
 import com.yun.orderPad.databinding.ActivityLoginBinding
 import com.yun.orderPad.ui.BaseActivity
 import com.yun.orderPad.ui.bind.BindActivity
+import com.yun.orderPad.ui.choose.ChooseModeActivity
 import com.yun.orderPad.ui.welcome.WelcomePresentation
 import com.yun.orderPad.util.sp.SpUtil
 
@@ -36,7 +37,7 @@ class LoginActivity : BaseActivity() {
         loginViewModel.loginResult.observe(this@LoginActivity) {
             SpUtil.token(it?.token)
             updateUiWithUser()
-            loginSuccess()
+            loginViewModel.requestConfig()
         }
 
         loginViewModel.loginError.observe(this@LoginActivity) {
@@ -56,11 +57,17 @@ class LoginActivity : BaseActivity() {
 
             loginViewModel.login(username.text.toString(), password.text.toString())
         }
-    }
 
-    private fun loginSuccess() {
-        startActivity(Intent(this, BindActivity::class.java))
-        finish()
+        loginViewModel.config.observe(this){
+            if (it != null) {
+                startActivity(Intent(this, ChooseModeActivity::class.java))
+            } else {
+                val intent = Intent(this, BindActivity::class.java)
+                intent.putExtra("data",START)
+                startActivity(intent)
+            }
+            finish()
+        }
     }
 
     private fun updateUiWithUser() {
@@ -83,5 +90,10 @@ class LoginActivity : BaseActivity() {
             presentationDisplay = LoginPresentation(this,route.presentationDisplay)
             presentationDisplay?.show()
         }
+    }
+
+    companion object {
+        const val TAG = "LoginActivity"
+        const val START = "login"
     }
 }

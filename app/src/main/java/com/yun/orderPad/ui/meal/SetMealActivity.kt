@@ -6,11 +6,20 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.yun.orderPad.R
 import com.yun.orderPad.databinding.ActivitySetMealBinding
+import com.yun.orderPad.model.COMMIT_STATE
 import com.yun.orderPad.smile.IsvInfo
 import com.yun.orderPad.smile.SmileManager
 import com.yun.orderPad.ui.bind.BindActivity
+import com.yun.orderPad.ui.meal.fragment.MealConfirmFragment
+import com.yun.orderPad.ui.meal.fragment.MealOrderFragment
+import com.yun.orderPad.ui.order.fragment.SingleConfirmFragment
+import com.yun.orderPad.ui.order.fragment.SingleOrderFragment
+import com.yun.orderPad.ui.order.fragment.SinglePayErrorFragment
+import com.yun.orderPad.ui.order.fragment.SinglePayFragment
 import com.yun.orderPad.ui.setting.SettingsActivity
 import com.yun.orderPad.util.LogUtil
 import com.yun.orderPad.util.ToastUtil
@@ -24,6 +33,8 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
     private lateinit var binding : ActivitySetMealBinding
     private lateinit var viewModel: SetMealViewModel
     private var mSmileManager: SmileManager? = null
+    private var orderFragment: MealOrderFragment? = null
+    private var confirmFragment: MealConfirmFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +42,7 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
         setContentView(binding.root)
         initView()
         initViewModel()
+        initFragment(savedInstanceState)
         initSmile()
     }
 
@@ -39,22 +51,20 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
         viewModel.getCurrentMeal()
         viewModel.getConfig()
 
-        viewModel.config.observe(this) {
-            if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
-                binding.setMealTitle.titleName.text = it.schoolName + " " + it.windowName
-                binding.setCanteen.text = it.kitchenName
-                binding.setWindow1.text = it.windowName
-            } else {
-                ToastUtil.show("设备未绑定，请先绑定设备信息")
-                startActivity(Intent(this, BindActivity::class.java))
-                this.finish()
+        viewModel.scan.observe(this){
+            if (it == true) {
+                startScan()
             }
         }
 
-        viewModel.currentMeal.observe(this) {
-            binding.meal.text = it?.mealTableName
-            binding.time.text = it?.mealStartTime + "~" + it?.mealEndTime
+        viewModel.scanError.observe(this) {
+            ToastUtil.show("人脸识别失败$it")
         }
+
+        viewModel.student.observe(this) {
+
+        }
+
     }
 
     private fun initView() {
@@ -62,14 +72,23 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
         binding.setMealTitle.titleSetting.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
+    }
 
-        binding.btnNfc.setOnClickListener {
+    private fun initFragment(savedInstanceState: Bundle?) {
+        orderFragment = MealOrderFragment.newInstance()
+        confirmFragment = MealConfirmFragment.newInstance()
 
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.container, orderFragment!!)
+                .commitNow()
         }
+    }
 
-        binding.btnFace.setOnClickListener {
-            startScan()
-        }
+    private fun replaceFragment(fm: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container,fm)
+            .commitAllowingStateLoss()
     }
 
     private fun initSmile() {
@@ -91,10 +110,12 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
     }
 
     override fun onVerifyResult(success: Boolean?, fToken: String?, uid: String?) {
-        runOnUiThread{
-            ToastUtil.show(if (success == true) "人脸识别成功" else "人脸识别失败")
-        }
         LogUtil.d(TAG,if (success == true) "人脸识别成功 token:$fToken; uid:$uid" else "人脸识别失败")
+        if (success == true) {
+            viewModel.getStudentInfo(uid)
+        } else {
+            viewModel.setScanErrorMsg(uid)
+        }
     }
 
     override fun onDestroy() {

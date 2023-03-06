@@ -5,10 +5,10 @@ data class MealRequest (
     /**
      * 餐次编码
      */
-    val mealTableCode: String,
+    val mealTableCode: String?,
 
     /**
      * 学生id
      */
-    val studentId: String
+    val studentId: String?
 )

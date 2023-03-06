@@ -10,10 +10,10 @@ data class Pickup (
     /**
      * 订单集合
      */
-    val orderNoList: List<String>,
+    val orderNoList: List<String?>?,
 
     /**
      * 学生id
      */
-    val studentId: String
+    val studentId: String?
 )
