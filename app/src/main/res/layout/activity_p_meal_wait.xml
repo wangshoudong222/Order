@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.welcome.WelcomeActivity"
+    android:background="@drawable/bg"
+    >
+
+
+    <include
+        android:id="@+id/p_meal_title"
+        layout="@layout/layout_p_title"
+
+        />
+
+    <TextView
+        android:id="@+id/text_wel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:textColor="#222222"
+        android:textSize="60sp"
+        android:layout_marginStart="20dp"
+        android:text="欢迎使用聚食安点餐系统"
+        />
+
+</RelativeLayout>

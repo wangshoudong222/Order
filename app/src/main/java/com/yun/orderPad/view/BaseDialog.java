@@ -62,6 +62,7 @@ public abstract class BaseDialog extends DialogFragment {
     return contentView;
   }
 
+
   @Override
   public void onStart() {
     super.onStart();

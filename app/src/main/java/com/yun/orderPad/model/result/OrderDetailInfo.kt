@@ -11,7 +11,7 @@ data class OrderDetailInfo (
     /**
      * 清真标识
      */
-    val halalFlag: String,
+    val isHalalFlag: Boolean,
 
     /**
      * 是否本窗口
@@ -21,7 +21,7 @@ data class OrderDetailInfo (
     /**
      * 是否待取
      */
-    val isWaitingPickUp: Boolean,
+    var isWaitingPickUp: Boolean,
 
     /**
      * 餐次名称
@@ -41,10 +41,15 @@ data class OrderDetailInfo (
     /**
      * 状态名称
      */
-    val stateName: String,
+    var stateName: String?,
 
     /**
      * 窗口名称
      */
-    val windowName: String
+    val windowName: String?,
+
+    /**
+     * 窗口名称
+     */
+    var confirmTime: String?
 )

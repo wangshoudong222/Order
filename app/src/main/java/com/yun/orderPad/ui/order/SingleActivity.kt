@@ -23,8 +23,10 @@ import com.yun.orderPad.ui.order.fragment.SingleConfirmFragment
 import com.yun.orderPad.ui.order.fragment.SingleOrderFragment
 import com.yun.orderPad.ui.order.fragment.SinglePayErrorFragment
 import com.yun.orderPad.ui.order.fragment.SinglePayFragment
-import com.yun.orderPad.ui.meal.presentation.ConfirmPresentation
+import com.yun.orderPad.ui.meal.presentation.MealConfirmPresentation
 import com.yun.orderPad.ui.meal.presentation.WaitPresentation
+import com.yun.orderPad.ui.order.presentation.ConfirmPresentation
+import com.yun.orderPad.ui.order.presentation.SinglePresentation
 import com.yun.orderPad.ui.setting.SettingsActivity
 import com.yun.orderPad.util.LogUtil
 import com.yun.orderPad.util.ToastUtil
@@ -178,9 +180,6 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     }
 
     override fun onInstallResult(isSuccess: Boolean, errMsg: String?) {
-        runOnUiThread {
-            ToastUtil.show(if (isSuccess) "扫脸程序初始化成功" else "扫脸程序初始化失败:$errMsg")
-        }
         LogUtil.d(TAG,if (isSuccess) "扫脸程序初始化成功" else "扫脸程序初始化失败:$errMsg")
     }
 
@@ -215,18 +214,16 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     /**
      * 副屏相关
      */
-    private var orderPre: WaitPresentation? = null
+    private var orderPre: SinglePresentation? = null
     private var confirmPre: ConfirmPresentation? = null
 
     private fun addPresentation(pre: String){
         if (pre == ORDER_PRE) {
-            if (orderPre == null) {
-                val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
-                val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
-                if (route != null && route.presentationDisplay != null) {
-                    orderPre = WaitPresentation(this,route.presentationDisplay)
-                    orderPre?.setOwnerActivity(this)
-                }
+            val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
+            val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
+            if (route != null && route.presentationDisplay != null) {
+                orderPre = SinglePresentation(this,route.presentationDisplay)
+                orderPre?.setOwnerActivity(this)
             }
             orderPre?.show()
         } else {
@@ -253,8 +250,6 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
     companion object {
         const val TAG = "SingleActivity"
-        const val ORDER_FRAGMENT = "ORDER_FRAGMENT"
-        const val CONFIRM_FRAGMENT = "CONFIRM_FRAGMENT"
         const val ORDER_PRE = "ORDER_PRE"
         const val CONFIRM_PRE = "CONFIRM_PRE"
 

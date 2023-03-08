@@ -5,5 +5,6 @@
   <!-- 圆角半径 -->
   <!-- 矩形的内部颜色，这里设置成白色，即空心 -->
   <solid android:color="#FFFFFFFF"/>
+  <size android:height="5dp" />
 
 </shape>

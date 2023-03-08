@@ -20,8 +20,6 @@ class SingleOrderFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initView()
-        initViewModel()
     }
 
     override fun onCreateView(
@@ -29,6 +27,7 @@ class SingleOrderFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSinglOrderBinding.inflate(layoutInflater)
+        initViewModel()
         return binding.root
     }
 
@@ -39,8 +38,9 @@ class SingleOrderFragment : Fragment() {
             binding.meal.text = it?.mealTableName
             binding.time.text = it?.mealStartTime + "~" + it?.mealEndTime
         }
+
         viewModel.config.observe(activity!!) {
-            if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
+            if (it != null) {
                 binding.setCanteen.text = it.kitchenName
                 binding.setWindow1.text = it.windowName
             }

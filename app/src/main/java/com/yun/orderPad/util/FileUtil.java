@@ -5,14 +5,20 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.google.gson.Gson;
 import com.yun.orderPad.BaseContext;
 import com.yun.orderPad.OrderApplication;
+import com.yun.orderPad.model.result.OrderInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
 
 public class FileUtil {
   private static final String TAG = "FileUtil";
@@ -32,6 +38,77 @@ public class FileUtil {
 
   public static File getLogDir() {
     return getDir(DIR_LOG);
+  }
+
+  static String s = "[\n" +
+          "    {\n" +
+          "        \"mealDate\":\"2023-03-08\",\n" +
+          "        \"mealTableName\":\"午餐\",\n" +
+          "        \"mealTypeName\":\"订餐\",\n" +
+          "        \"orderDetailInfoList\":[\n" +
+          "            {\n" +
+          "                \"dishSkuName\":\"青椒豆腐丝\",\n" +
+          "                \"halalFlag\":\"true\",\n" +
+          "                \"mealTableName\":\"午餐\",\n" +
+          "                \"price\":0.01,\n" +
+          "                \"quantity\":1,\n" +
+          "                \"selfWindow\":true,\n" +
+          "                \"stateName\":\"待取餐\",\n" +
+          "                \"waitingPickUp\":true,\n" +
+          "                \"windowName\":\"1号\"\n" +
+          "            },\n" +
+          "            {\n" +
+          "                \"dishSkuName\":\"家常豆腐\",\n" +
+          "                \"halalFlag\":\"true\",\n" +
+          "                \"mealTableName\":\"午餐\",\n" +
+          "                \"price\":0.01,\n" +
+          "                \"quantity\":1,\n" +
+          "                \"selfWindow\":true,\n" +
+          "                \"stateName\":\"待取餐\",\n" +
+          "                \"waitingPickUp\":true,\n" +
+          "                \"windowName\":\"1号\"\n" +
+          "            },\n" +
+          "            {\n" +
+          "                \"dishSkuName\":\"土豆肉丝\",\n" +
+          "                \"halalFlag\":\"false\",\n" +
+          "                \"mealTableName\":\"午餐\",\n" +
+          "                \"price\":0.01,\n" +
+          "                \"quantity\":1,\n" +
+          "                \"selfWindow\":true,\n" +
+          "                \"stateName\":\"待取餐\",\n" +
+          "                \"waitingPickUp\":true,\n" +
+          "                \"windowName\":\"1号\"\n" +
+          "            },\n" +
+          "            {\n" +
+          "                \"dishSkuName\":\"山药炖鸡\",\n" +
+          "                \"halalFlag\":\"false\",\n" +
+          "                \"mealTableName\":\"午餐\",\n" +
+          "                \"price\":0.01,\n" +
+          "                \"quantity\":1,\n" +
+          "                \"selfWindow\":true,\n" +
+          "                \"stateName\":\"待取餐\",\n" +
+          "                \"waitingPickUp\":true,\n" +
+          "                \"windowName\":\"1号\"\n" +
+          "            },\n" +
+          "            {\n" +
+          "                \"dishSkuName\":\"家常豆腐\",\n" +
+          "                \"halalFlag\":\"true\",\n" +
+          "                \"mealTableName\":\"午餐\",\n" +
+          "                \"price\":0.01,\n" +
+          "                \"quantity\":1,\n" +
+          "                \"selfWindow\":true,\n" +
+          "                \"stateName\":\"待取餐\",\n" +
+          "                \"waitingPickUp\":true,\n" +
+          "                \"windowName\":\"1号\"\n" +
+          "            }\n" +
+          "        ],\n" +
+          "        \"orderNo\":\"1633293401386639363\"\n" +
+          "    }\n" +
+          "]";
+
+  public static List<OrderInfo> getD() {
+    Type listType = new TypeReference <List<OrderInfo>>() {}.getType();
+    return JSON.parseObject(s, listType);
   }
 
   /**

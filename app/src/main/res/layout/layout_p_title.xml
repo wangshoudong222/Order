@@ -28,15 +28,16 @@
         tools:text="资阳一中 1号机"
         />
 
-    <TextView
-        android:id="@+id/title_time"
+
+    <TextClock
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
         android:textSize="20sp"
         android:textColor="@color/white"
         android:gravity="center_vertical"
-        tools:text="2023.02.12 12:00"
+        android:format12Hour="yyyy.MM.dd HH:mm"
+        android:format24Hour="yyyy.MM.dd HH:mm"
         />
 
 </LinearLayout>

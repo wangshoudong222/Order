@@ -3,6 +3,7 @@ package com.yun.orderPad.ui.order.presentation
 import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Display
 import android.view.Gravity
 import android.view.KeyEvent
@@ -33,7 +34,6 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
     private lateinit var viewModel: SingleViewModel
     private lateinit var activity: SingleActivity
     private var adapter:OrderAdapter? = null
-    private var pop:ErrorPop1? = null
     private var focusIndex = 0
     private var codeInput = StringBuilder()
 
@@ -49,6 +49,12 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
         activity = ownerActivity as SingleActivity
         viewModel = ViewModelProvider(activity).get(SingleViewModel::class.java)
 
+        viewModel.config.observe(activity) {
+            if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
+                binding.pSingleTitle.titleName.text = it.schoolName + " " + it.windowName
+            }
+        }
+
         viewModel.currentMeal.observe(activity) {
             if (it != null) {
                 viewModel.getMealMenuList()
@@ -56,8 +62,10 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
         }
 
         viewModel.listMenu.observe(activity) {
-            initShow()
-            initAdapter()
+            if (it != null && it.isNotEmpty()) {
+                initShow()
+                initAdapter()
+            }
         }
 
         viewModel.total.observe(activity) {
@@ -93,7 +101,6 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
                 COMMIT_STATE.SCAN_ERROR -> {
                     LogUtil.d(TAG,"扫脸失败")
                     binding.pb.visibility = View.GONE
-                    showErrorPop()
                 }
 
                 COMMIT_STATE.SUCCESS -> {
@@ -114,24 +121,6 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
     }
 
 
-    private fun showErrorPop() {
-        if (pop == null) {
-            pop = ErrorPop1("测试展示",activity)
-        }
-
-        pop?.showAtLocation(binding.root,Gravity.CENTER,0,0)
-
-        MainThreadHandler.postDelayed({
-            dismissPop()
-        },5000)
-    }
-
-    private fun dismissPop() {
-        if (pop?.isShowing == true) {
-            pop?.dismiss()
-        }
-    }
-
     private fun initShow() {
         viewModel.listMenu.value?.get(0)?.fouces = true
         viewModel.listMenu.value?.forEachIndexed { index, mealMenu ->
@@ -144,15 +133,8 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
     }
 
     private fun initAdapter() {
-        if (adapter == null) {
-            adapter = OrderAdapter(context, viewModel.listMenu.value)
-            val manager = GridLayoutManager(context,2)
-            val spaceItemDecoration = SpaceItemDecoration(CommonUtils.dp2px(context, 30f))
-            manager.orientation = RecyclerView.VERTICAL
-            binding.orderRv.layoutManager = manager
-            binding.orderRv.addItemDecoration(spaceItemDecoration)
-            binding.orderRv.adapter = adapter
-        }
+        adapter = OrderAdapter(context, viewModel.listMenu.value)
+        binding.orderRv.adapter = adapter
     }
 
     private fun initView() {
@@ -170,6 +152,12 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
                 EventBus.getDefault().post(ConfirmEvent())
             }
         }
+
+        val manager = GridLayoutManager(context,2)
+        val spaceItemDecoration = SpaceItemDecoration(CommonUtils.dp2px(context, 30f))
+        manager.orientation = RecyclerView.VERTICAL
+        binding.orderRv.layoutManager = manager
+        binding.orderRv.addItemDecoration(spaceItemDecoration)
     }
 
 
@@ -184,11 +172,23 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
             }
             // 删除键
             KeyEvent.KEYCODE_DEL -> {
-                viewModel.listMenu.value?.let {
-                    it[focusIndex].checked = false
-                }
                 if (codeInput.isNotEmpty()) {
                     codeInput.deleteCharAt(codeInput.lastIndex)
+                    return true
+                } else {
+                    viewModel.listMenu.value?.get(focusIndex)?.let {
+                        if (it.quantity!= null && it.quantity!! <= 0) {
+                            it.quantity = 0
+                        } else {
+                            it.quantity = it.quantity?.minus(1)
+                            viewModel.setTotal(viewModel.total.value?.minus(it.price!!))
+                            viewModel.setTotalMeal(viewModel.totalMeals.value?.minus(1))
+                            if (it.quantity!! == 0L) {
+                                it.checked = false
+                            }
+                        }
+                        adapter?.notifyItemChanged(focusIndex)
+                    }
                 }
                 return true
             }
@@ -198,6 +198,7 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
                     it.forEach { menu->
                         menu.checked = false
                         menu.fouces = false
+                        menu.quantity = 0
                     }
                     focusIndex = 0
                     it[focusIndex].fouces = true
@@ -205,7 +206,11 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
                 if (codeInput.isNotEmpty()) {
                     codeInput.clear()
                 }
+
+                viewModel.setTotal(BigDecimal.ZERO)
+                viewModel.setTotalMeal(0)
                 binding.orderRv.scrollToPosition(focusIndex)
+                adapter?.notifyDataSetChanged()
                 return true
             }
             // 设置键

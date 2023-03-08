@@ -22,9 +22,6 @@ class SingleViewModel : ViewModel() {
     private val _config = MutableLiveData<Config?>()
     val config: LiveData<Config?> = _config
 
-    private val _configRequest = MutableLiveData<Boolean>()
-    val configRequest: LiveData<Boolean> = _configRequest
-
     private val _currentMeal = MutableLiveData<Meal?>()
     val currentMeal: LiveData<Meal?> = _currentMeal
 
@@ -86,7 +83,6 @@ class SingleViewModel : ViewModel() {
         val s = SpUtil.config()
         if (!TextUtils.isEmpty(s)) {
             _config.postValue(JSON.parseObject(s, Config::class.java))
-            _configRequest.postValue(true)
         } else {
             requestConfig()
         }
@@ -208,11 +204,9 @@ class SingleViewModel : ViewModel() {
                     if (!TextUtils.isEmpty(JSON.toJSONString(config))) {
                         SpUtil.config(JSON.toJSONString(config))
                         _config.postValue(config)
-                        _configRequest.postValue(true)
                         return@launch
                     }
                 }
-                _configRequest.postValue(false)
             } else if (result is NetResult.Error){
                 LogUtil.d(TAG,"getConfig ${result.exception}")
             }
@@ -234,7 +228,6 @@ class SingleViewModel : ViewModel() {
     fun reOrder() {
         getConfig()
         getCurrentMeal()
-        getMealMenuList()
         _student.postValue(null)
         _sum.postValue(null)
         _confirmOrder.postValue(null)
