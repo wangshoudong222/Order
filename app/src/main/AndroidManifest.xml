@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.yun.orderPad">
+    package="com.julihe.orderPad">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -16,13 +16,6 @@
         android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.OrderPad">
-        <activity
-            android:name=".TestActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
         <activity android:name=".ui.BaseActivity" />
         <activity
             android:name=".ui.order.SingleOrderActivity"
@@ -66,16 +59,17 @@
             android:name=".ui.welcome.WelcomeActivity"
             android:launchMode="singleTask">
             <intent-filter>
+                <action android:name="julihe.pad.intent.action.MAIN"/>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.smile.UseSmileActivity"
+            android:name="com.julihe.orderPad.ui.smile.UseSmileActivity"
             android:exported="true" />
     </application>
 
