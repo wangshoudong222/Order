@@ -10,7 +10,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.julihe.orderPad"
+        applicationId "com.julihe.order"
         minSdk 21
         targetSdk 30
         versionCode 1000

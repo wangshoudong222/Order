@@ -1,4 +1,4 @@
-package com.julihe.orderPad
+package com.julihe.order
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.julihe.orderPad
+package com.julihe.order
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
