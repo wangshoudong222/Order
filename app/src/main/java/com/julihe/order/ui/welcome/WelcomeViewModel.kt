@@ -18,6 +18,9 @@ class WelcomeViewModel: ViewModel() {
     private val _configRequest = MutableLiveData<Boolean>()
     val configRequest: LiveData<Boolean> = _configRequest
 
+    private val _config = MutableLiveData<Config?>()
+    val config: LiveData<Config?> = _config
+
     /**
      * 获取配置信息
      */
@@ -27,6 +30,7 @@ class WelcomeViewModel: ViewModel() {
             if (result is NetResult.Success) {
                 if (result.data != null) {
                     val config = result.data
+                    _config.postValue(config)
                     LogUtil.d(TAG,"getConfig ${JSON.toJSONString(config)}")
                     if (!TextUtils.isEmpty(JSON.toJSONString(config))) {
                         SpUtil.config(JSON.toJSONString(config))
@@ -39,6 +43,7 @@ class WelcomeViewModel: ViewModel() {
                 LogUtil.d(TAG,"getConfig ${result.exception}")
                 SpUtil.config("")
                 _configRequest.postValue(false)
+                _config.postValue(null)
             }
         }
     }

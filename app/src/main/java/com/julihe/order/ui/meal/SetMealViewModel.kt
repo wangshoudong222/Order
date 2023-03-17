@@ -14,6 +14,7 @@ import com.julihe.order.net.OrderRepository
 import com.julihe.order.net.exception.ResultException
 import com.julihe.order.net.model.NetResult
 import com.julihe.order.ui.order.SingleViewModel
+import com.julihe.order.ui.simple.SimpleViewModel
 import com.julihe.order.util.CommonUtils
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.sp.SpUtil
@@ -54,11 +55,18 @@ class SetMealViewModel : ViewModel() {
     private val _scan = MutableLiveData<Boolean>()
     val scan: LiveData<Boolean?> = _scan
 
+    private val _mealError = MutableLiveData<Boolean?>()
+    val mealError: LiveData<Boolean?> = _mealError
+
     private val _scanError = MutableLiveData<String?>()
     val scanError: LiveData<String?> = _scanError
 
     private val _studentError = MutableLiveData<String?>()
     val studentError: LiveData<String?> = _studentError
+
+    private fun setMealError(boolean: Boolean?) {
+        _mealError.postValue(boolean)
+    }
 
     fun setScanErrorMsg(scanError: String?) {
         _scanError.postValue(scanError)
@@ -89,11 +97,14 @@ class SetMealViewModel : ViewModel() {
                     val orderMode = result.data
                     LogUtil.d(TAG,"getCurrentMeal ${JSON.toJSONString(orderMode)}")
                     _currentMeal.postValue(orderMode)
+                    setMealError(false)
                 } else {
                     LogUtil.d("未获取到当前餐次信息")
+                    setMealError(true)
                 }
             } else if (result is NetResult.Error){
                 LogUtil.d(TAG,"getConfig ${result.exception}")
+                setMealError(true)
             }
         }
     }
@@ -170,6 +181,8 @@ class SetMealViewModel : ViewModel() {
                 _orderError.postValue(ResultException("0","获取包餐信息为空"))
             } else if (result is NetResult.Error){
                 LogUtil.d(SingleViewModel.TAG,"getStudentInfo ${result.exception}")
+                _orderError.postValue(ResultException(result.exception.errCode,result.exception.msg))
+
             }
         }
     }

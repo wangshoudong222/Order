@@ -18,11 +18,13 @@ import com.julihe.order.ui.order.SingleActivity
 import com.julihe.order.ui.order.SingleViewModel
 import com.julihe.order.util.CommonUtils
 import com.julihe.order.util.LogUtil
+import com.julihe.order.util.MainThreadHandler
 import com.julihe.order.util.ToastUtil
 import com.julihe.order.view.OrderAdapter
 import com.julihe.order.view.SpaceItemDecoration
 import org.greenrobot.eventbus.EventBus
 import java.math.BigDecimal
+import kotlin.reflect.jvm.internal.impl.resolve.VisibilityUtilKt
 
 class SinglePresentation(outerContext: Context?, display: Display?, ) :
     Presentation(outerContext, display) {
@@ -72,43 +74,47 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
             when(it) {
                 COMMIT_STATE.ORDER -> {
                     LogUtil.d(TAG,"正在点餐")
-                    binding.pb.visibility = View.GONE
                 }
 
                 COMMIT_STATE.REORDER -> {
                     LogUtil.d(TAG,"重新点餐")
-                    binding.pb.visibility = View.GONE
                 }
 
                 COMMIT_STATE.COMMITTING -> {
                     LogUtil.d(TAG,"正在提交")
-                    binding.pb.visibility = View.VISIBLE
+                    showTip("等待支付", false)
                 }
 
                 COMMIT_STATE.SCANNING -> {
                     LogUtil.d(TAG,"正在扫脸")
-                    binding.pb.visibility = View.VISIBLE
+                    showTip("正在扫脸", false)
                 }
 
                 COMMIT_STATE.SCAN_ERROR -> {
                     LogUtil.d(TAG,"扫脸失败")
-                    binding.pb.visibility = View.GONE
+                    showTip("扫脸失败", true)
                 }
 
                 COMMIT_STATE.SUCCESS -> {
-                    ToastUtil.show("取餐成功")
-                    binding.pb.visibility = View.GONE
                 }
 
                 COMMIT_STATE.ERROR -> {
-                    binding.pb.visibility = View.GONE
-                    ToastUtil.show("取餐失败")
                 }
 
                 else -> {
-                    binding.pb.visibility = View.GONE
                 }
             }
+        }
+    }
+
+    private fun showTip(string: String?, cancel: Boolean) {
+        MainThreadHandler.removeCallbacks(TAG_TIPS)
+        binding.tvInfo.text = string
+        binding.tvInfo.visibility = View.VISIBLE
+        if (cancel) {
+            MainThreadHandler.postDelayed(TAG_TIPS, {
+                binding.tvInfo.visibility = View.GONE
+            },5000)
         }
     }
 
@@ -314,5 +320,6 @@ class SinglePresentation(outerContext: Context?, display: Display?, ) :
 
     companion object {
         const val TAG = "SinglePresentation"
+        const val TAG_TIPS = "TAG_TIPS"
     }
 }

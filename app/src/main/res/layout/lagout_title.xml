@@ -41,8 +41,8 @@
 
     <Button
         android:id="@+id/title_setting"
-        android:layout_width="55dp"
-        android:layout_height="28dp"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
         android:background="@drawable/bg_login_white_stroke"
         android:gravity="center"
         android:text="设置"

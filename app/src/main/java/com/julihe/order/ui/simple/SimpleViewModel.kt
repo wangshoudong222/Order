@@ -1,4 +1,4 @@
-package com.julihe.order.ui.order
+package com.julihe.order.ui.simple
 
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
@@ -11,13 +11,12 @@ import com.julihe.order.model.request.*
 import com.julihe.order.model.result.*
 import com.julihe.order.net.OrderRepository
 import com.julihe.order.net.model.NetResult
-import com.julihe.order.ui.simple.SimpleViewModel
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.sp.SpUtil
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
-class SingleViewModel : ViewModel() {
+class SimpleViewModel : ViewModel() {
 
     private val _config = MutableLiveData<Config?>()
     val config: LiveData<Config?> = _config
@@ -40,46 +39,46 @@ class SingleViewModel : ViewModel() {
     private val _commitState = MutableLiveData<COMMIT_STATE>()
     val state: LiveData<COMMIT_STATE?> = _commitState
 
-    private val _mealError = MutableLiveData<Boolean?>()
-    val mealError: LiveData<Boolean?> = _mealError
-
     private val _errorMsg = MutableLiveData<String?>()
     val errorMsg: LiveData<String?> = _errorMsg
 
     private val _scan = MutableLiveData<Boolean>()
     val scan: LiveData<Boolean?> = _scan
 
+    private val _commit = MutableLiveData<Boolean>()
+    val commit: LiveData<Boolean?> = _commit
+
     private val _scanError = MutableLiveData<String?>()
     val scanError: LiveData<String?> = _scanError
 
-    private val _totalMeals= MutableLiveData<Long?>()
-    val totalMeals: LiveData<Long?> = _totalMeals
+    private val _mealError = MutableLiveData<Boolean?>()
+    val mealError: LiveData<Boolean?> = _mealError
 
-    private val _total = MutableLiveData<BigDecimal?>()
-    val total: LiveData<BigDecimal?> = _total
+    private val _input = MutableLiveData<String?>()
+    val input: LiveData<String?> = _input
 
-    private fun setMealError(boolean: Boolean?) {
-        _mealError.postValue(boolean)
-    }
-
-    fun setTotal(bigDecimal: BigDecimal?) {
-        _total.postValue(bigDecimal)
-    }
-
-    fun setTotalMeal(long: Long?) {
-        _totalMeals.postValue(long)
+    fun setInput(input: String?) {
+        _input.postValue(input)
     }
 
     private fun setErrorMsg(errorMsg: String?) {
         _errorMsg.postValue(errorMsg)
     }
 
+    private fun setMealError(boolean: Boolean?) {
+        _mealError.postValue(boolean)
+    }
+
     fun setScanErrorMsg(scanError: String?) {
         _scanError.postValue(scanError)
     }
 
-    fun confirmOrder(list: List<MealMenu>?) {
-       _confirmOrder.postValue(list)
+    fun confirmOrder() {
+        if (_listMenu.value != null && _listMenu.value?.isNotEmpty() == true) {
+            _listMenu.value!![0].price = BigDecimal(_input.value)
+            _listMenu.value!![0].quantity = 1
+            _confirmOrder.postValue(_listMenu.value)
+        }
     }
 
     fun doScan(boolean: Boolean) {
@@ -108,16 +107,16 @@ class SingleViewModel : ViewModel() {
             if (result is NetResult.Success) {
                 if (result.data != null) {
                     val meal = result.data
+                    val mea = Meal("23:00","16:00","晚餐","dinner")
                     LogUtil.d(TAG,"getCurrentMeal ${JSON.toJSONString(meal)}")
                     _currentMeal.postValue(meal)
                     setMealError(false)
                 } else {
-                    LogUtil.d("未获取到当前餐次信息")
                     setMealError(true)
+                    LogUtil.d("未获取到当前餐次信息")
                 }
             } else if (result is NetResult.Error){
                 LogUtil.d(TAG,"getCurrentMeal ${result.exception}")
-                setMealError(true)
             }
         }
     }
@@ -132,20 +131,8 @@ class SingleViewModel : ViewModel() {
             if (result is NetResult.Success) {
                 if (result.data != null && result.data.isNotEmpty()) {
                     val list = result.data
-                    LogUtil.d(TAG,"getMealMenuList ${JSON.toJSONString(list)}")
-                    list[0].fouces = true
-                    list.forEachIndexed { index, mealMenu ->
-                        mealMenu.checked = false
-                        mealMenu.quantity = 0
-                        mealMenu.fouces = index == 0
-                    }
-                    // 初始化
-                    setTotal(BigDecimal.ZERO)
-                    setTotalMeal(0)
                     _listMenu.postValue(list)
-                    setMealError(false)
                 } else {
-                    setMealError(true)
                     LogUtil.d("未获取到菜单信息")
                 }
             } else if (result is NetResult.Error){
@@ -155,7 +142,7 @@ class SingleViewModel : ViewModel() {
     }
 
     /**
-     * 获取学生信息  uid:2088520423158772 无信息未找到用户信息，请重新尝试或联系负责人！
+     * 获取学生信息
      */
     fun getStudentInfo(faceId: String?) {
         viewModelScope.launch {
@@ -188,7 +175,7 @@ class SingleViewModel : ViewModel() {
                 LogUtil.d("取餐成功")
             } else if (result is NetResult.Error){
                 getStudentAccount()
-                LogUtil.d(TAG,"getCurrentMeal ${result.exception}")
+                LogUtil.d(TAG,"submitMealOrder ${result.exception}")
                 checkState(COMMIT_STATE.ERROR)
                 setErrorMsg(result.exception.msg)
             }
@@ -234,31 +221,19 @@ class SingleViewModel : ViewModel() {
         }
     }
 
-    fun getMenuByCode(code: String): Int{
-        var result = -1
-        _listMenu.value?.forEachIndexed { index, mealMenu ->
-            if (code == mealMenu.dishCode) {
-                result = index
-                return@forEachIndexed
-            }
-        }
-        return result
-    }
-
     fun reOrder() {
         _student.postValue(null)
         _sum.postValue(null)
         _confirmOrder.postValue(null)
         _scan.postValue(false)
         _errorMsg.postValue(null)
-        _totalMeals.postValue(0)
-        _total.postValue(BigDecimal.ZERO)
         _commitState.postValue(COMMIT_STATE.ORDER)
+        _input.postValue("0")
         getConfig()
         getCurrentMeal()
     }
 
     companion object {
-        const val TAG = "SingleViewModel"
+        const val TAG = "SimpleViewModel"
     }
 }

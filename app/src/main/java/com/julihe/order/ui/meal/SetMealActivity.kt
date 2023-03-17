@@ -18,6 +18,7 @@ import com.julihe.order.ui.meal.dialog.ErrorDialog
 import com.julihe.order.ui.meal.dialog.SuccessDialog
 import com.julihe.order.ui.meal.presentation.MealConfirmPresentation
 import com.julihe.order.ui.meal.presentation.WaitPresentation
+import com.julihe.order.ui.order.SingleActivity
 import com.julihe.order.ui.setting.SettingsActivity
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.MainThreadHandler
@@ -125,6 +126,16 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
                 },5000)
             }
         }
+
+        viewModel.mealError.observe(this) {
+            if (it == true) {
+                MainThreadHandler.removeCallbacks(TAG_MEAL_ERROR)
+                // 获取不到餐次信息，每60S获取一次
+                MainThreadHandler.postDelayed(TAG_MEAL_ERROR, {
+                    viewModel.getCurrentMeal()
+                },1000 * 60)
+            }
+        }
     }
 
     private fun showErrorDialog(it: String?) {
@@ -229,7 +240,6 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
     }
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-        Log.w(TAG, "dispatchKeyEventdispatchKeyEventdispatchKeyEvent")
 
         return confirmPre?.dispatchKeyEvent(event!!) == true
 //        if (event != null) {
@@ -252,6 +262,7 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
         super.onDestroy()
         Log.w(TAG, "onDestroy")
         mSmileManager?.onDestroy(TYPE)
+        MainThreadHandler.removeCallbacks(TAG_MEAL_ERROR)
     }
 
     companion object {
@@ -260,6 +271,7 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
 
         const val WAIT_PRE = "WAIT_PRE"
         const val CONFIRM_PRE = "CONFIRM_PRE"
+        const val TAG_MEAL_ERROR = "Set_TAG_MEAL_ERROR"
 
     }
 

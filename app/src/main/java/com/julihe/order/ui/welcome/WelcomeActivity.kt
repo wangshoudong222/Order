@@ -17,6 +17,9 @@ import com.julihe.order.ui.BaseActivity
 import com.julihe.order.ui.login.LoginActivity
 import com.julihe.order.ui.bind.BindActivity
 import com.julihe.order.ui.choose.ChooseModeActivity
+import com.julihe.order.ui.meal.SetMealActivity
+import com.julihe.order.ui.order.SingleActivity
+import com.julihe.order.ui.simple.SimpleActivity
 
 class WelcomeActivity : BaseActivity() {
 
@@ -32,8 +35,17 @@ class WelcomeActivity : BaseActivity() {
         addPresentation()
         viewModel = ViewModelProvider(this).get(WelcomeViewModel::class.java)
 
-        viewModel?.configRequest?.observe(this) {
-            jumpActivity(if (it) ChooseModeActivity::class.java else BindActivity::class.java)
+        viewModel?.config?.observe(this) {
+            if (it != null) {
+                if (it.orderMode != null) {
+                    jumpActivity(if (ChooseModeActivity.MODE_TSLDXJ == it.orderMode) SingleActivity::class.java
+                        else if (ChooseModeActivity.MODE_QCMS == it.orderMode) SetMealActivity::class.java else SimpleActivity::class.java)
+                } else {
+                    jumpActivity(ChooseModeActivity::class.java)
+                }
+            } else {
+                jumpActivity(BindActivity::class.java)
+            }
         }
 
         tvVersion = findViewById(R.id.version)

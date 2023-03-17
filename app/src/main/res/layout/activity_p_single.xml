@@ -145,11 +145,18 @@
         </LinearLayout>
     </LinearLayout>
 
-    <androidx.core.widget.ContentLoadingProgressBar
-        android:id="@+id/pb"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="600dp"
+        android:layout_height="300dp"
         android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="#621D23"
+        android:textSize="45sp"
+        android:text=""
+        android:background="@drawable/error_bg"
         android:visibility="gone"
         />
+
 </RelativeLayout>

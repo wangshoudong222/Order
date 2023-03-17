@@ -1,4 +1,4 @@
-package com.julihe.order.ui.order
+package com.julihe.order.ui.simple
 
 import android.content.Context
 import android.content.Intent
@@ -19,6 +19,7 @@ import com.julihe.order.smile.IsvInfo
 import com.julihe.order.smile.SmileManager
 import com.julihe.order.ui.bind.BindActivity
 import com.julihe.order.ui.meal.SetMealActivity
+import com.julihe.order.ui.order.SingleActivity
 import com.julihe.order.ui.order.fragment.SingleConfirmFragment
 import com.julihe.order.ui.order.fragment.SingleOrderFragment
 import com.julihe.order.ui.order.fragment.SinglePayErrorFragment
@@ -26,7 +27,12 @@ import com.julihe.order.ui.order.fragment.SinglePayFragment
 import com.julihe.order.ui.order.presentation.ConfirmPresentation
 import com.julihe.order.ui.order.presentation.SinglePresentation
 import com.julihe.order.ui.setting.SettingsActivity
-import com.julihe.order.ui.simple.SimpleActivity
+import com.julihe.order.ui.simple.fragment.SimpleConfirmFragment
+import com.julihe.order.ui.simple.fragment.SimpleOrderFragment
+import com.julihe.order.ui.simple.fragment.SimplePayErrorFragment
+import com.julihe.order.ui.simple.fragment.SimplePaySuccessFragment
+import com.julihe.order.ui.simple.presentation.SimplePayPresentation
+import com.julihe.order.ui.simple.presentation.SimplePresentation
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.MainThreadHandler
 import com.julihe.order.util.ToastUtil
@@ -35,17 +41,17 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 /**
- * 零点模式
+ * 简约模式
  */
-class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener,
+class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener,
     SmileManager.OnScanFaceResultListener{
 
     private lateinit var binding : ActivitySingleBinding
-    private lateinit var viewModel: SingleViewModel
-    private lateinit var orderFragment: SingleOrderFragment
-    private lateinit var confirmFragment: SingleConfirmFragment
-    private lateinit var paySFragment: SinglePayFragment
-    private lateinit var payErrorFragment: SinglePayErrorFragment
+    private lateinit var viewModel: SimpleViewModel
+    private lateinit var orderFragment: SimpleOrderFragment
+    private lateinit var confirmFragment: SimpleConfirmFragment
+    private lateinit var paySuccessFragment: SimplePaySuccessFragment
+    private lateinit var payErrorFragment: SimplePayErrorFragment
 
     private var mSmileManager: SmileManager? = null
     private var curPre = ORDER_PRE
@@ -54,7 +60,6 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         super.onCreate(savedInstanceState)
         binding = ActivitySingleBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        EventBus.getDefault().register(this)
         initView()
         initViewModel()
         initSmile()
@@ -62,7 +67,7 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(SingleViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(SimpleViewModel::class.java)
         viewModel.getCurrentMeal()
         viewModel.getConfig()
         viewModel.checkState(COMMIT_STATE.ORDER)
@@ -82,6 +87,16 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
             }
         }
 
+        viewModel.mealError.observe(this) {
+            if (it == true) {
+                // 获取不到餐次信息，每60S获取一次
+                MainThreadHandler.removeCallbacks(TAG_MEAL_ERROR)
+                MainThreadHandler.postDelayed(TAG_MEAL_ERROR, {
+                    viewModel.getCurrentMeal()
+                },1000 * 60)
+            }
+        }
+
         viewModel.scan.observe(this) {
             if (it == true) {
                 viewModel.checkState(COMMIT_STATE.SCANNING)
@@ -92,16 +107,6 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         viewModel.student.observe(this) {
             it?.let {
                 viewModel.submitMealOrder()
-            }
-        }
-
-        viewModel.mealError.observe(this) {
-            if (it == true) {
-                // 获取不到餐次信息，每60S获取一次
-                MainThreadHandler.removeCallbacks(TAG_MEAL_ERROR)
-                MainThreadHandler.postDelayed(TAG_MEAL_ERROR, {
-                    viewModel.getCurrentMeal()
-                },1000 * 60)
             }
         }
 
@@ -120,6 +125,7 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
                 COMMIT_STATE.COMMITTING -> {
                     LogUtil.d(TAG,"正在提交")
+                    replaceFragment(confirmFragment)
                 }
 
                 COMMIT_STATE.SCANNING -> {
@@ -128,13 +134,13 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
                 COMMIT_STATE.SUCCESS -> {
                     ToastUtil.show("取餐成功")
-                    addPresentation(CONFIRM_PRE)
-                    replaceFragment(paySFragment)
+                    addPresentation(PAY_PRE)
+                    replaceFragment(paySuccessFragment)
                 }
 
                 COMMIT_STATE.ERROR -> {
                     ToastUtil.show("取餐失败")
-                    addPresentation(CONFIRM_PRE)
+                    addPresentation(PAY_PRE)
                     replaceFragment(payErrorFragment)
                 }
 
@@ -153,10 +159,11 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     }
 
     private fun initFragment(savedInstanceState: Bundle?) {
-        orderFragment = SingleOrderFragment.newInstance()
-        confirmFragment = SingleConfirmFragment.newInstance()
-        paySFragment = SinglePayFragment.newInstance()
-        payErrorFragment = SinglePayErrorFragment.newInstance()
+        orderFragment = SimpleOrderFragment.newInstance()
+        confirmFragment = SimpleConfirmFragment.newInstance()
+        paySuccessFragment = SimplePaySuccessFragment.newInstance()
+        payErrorFragment = SimplePayErrorFragment.newInstance()
+
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -175,8 +182,8 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         if (event != null) {
             if (curPre == ORDER_PRE && orderPre != null) {
                 return orderPre?.dispatchKeyEvent(event) == true
-            } else if (curPre == CONFIRM_PRE && confirmPre != null) {
-                return confirmPre?.dispatchKeyEvent(event) == true
+            } else if (curPre == PAY_PRE && payPre != null) {
+                return payPre?.dispatchKeyEvent(event) == true
             }
         }
         return super.dispatchKeyEvent(event)
@@ -223,56 +230,47 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.w(SetMealActivity.TAG, "onDestroy")
         mSmileManager?.onDestroy(TYPE)
-        EventBus.getDefault().unregister(this)
         MainThreadHandler.removeCallbacks(TAG_MEAL_ERROR)
+        Log.w(TAG, "onDestroy")
     }
 
     /**
      * 副屏相关
      */
-    private var orderPre: SinglePresentation? = null
-    private var confirmPre: ConfirmPresentation? = null
+    private var orderPre: SimplePresentation? = null
+    private var payPre: SimplePayPresentation? = null
 
     private fun addPresentation(pre: String){
         if (pre == ORDER_PRE && (orderPre == null || orderPre?.isShowing == false)) {
             val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
             val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
             if (route != null && route.presentationDisplay != null) {
-                orderPre = SinglePresentation(this,route.presentationDisplay)
+                orderPre = SimplePresentation(this,route.presentationDisplay)
                 orderPre?.setOwnerActivity(this)
             }
             orderPre?.show()
-            confirmPre?.dismiss()
-            confirmPre = null
-        } else if (pre == CONFIRM_PRE && (confirmPre == null || confirmPre?.isShowing == false)){
+            payPre?.dismiss()
+            payPre = null
+        } else if (pre == PAY_PRE && (payPre == null || payPre?.isShowing == false)){
             val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
             val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
             if (route != null && route.presentationDisplay != null) {
-                confirmPre = ConfirmPresentation(this,route.presentationDisplay)
-                confirmPre?.setOwnerActivity(this)
+                payPre = SimplePayPresentation(this,route.presentationDisplay)
+                payPre?.setOwnerActivity(this)
             }
-            confirmPre?.show()
+            payPre?.show()
             orderPre?.dismiss()
             orderPre = null
         }
         curPre = pre
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun confirmOrder(event: ConfirmEvent) {
-        if (confirmFragment.isAdded && confirmFragment.isVisible) {
-            return
-        }
-        replaceFragment(confirmFragment)
-    }
-
     companion object {
-        const val TAG = "SingleActivity"
+        const val TAG = "SimpleActivity"
+        const val TAG_MEAL_ERROR = "TAG_MEAL_ERROR"
         const val ORDER_PRE = "ORDER_PRE"
-        const val CONFIRM_PRE = "CONFIRM_PRE"
-        const val TAG_MEAL_ERROR = "SingleActivity_TAG_MEAL_ERROR"
+        const val PAY_PRE = "PAY_PRE"
 
         var TYPE = SmileManager.SCAN_TYPE_APPROACH_SINGLE
     }

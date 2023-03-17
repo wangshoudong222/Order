@@ -35,7 +35,7 @@ data class MealMenu(
     /**
      * 价格，BigDecimal
      */
-    val price: BigDecimal?,
+    var price: BigDecimal?,
 
     var checked: Boolean?,
 

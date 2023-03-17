@@ -4,9 +4,9 @@ data class OrderMode(
     /**
       * 点餐模式
        */
-    val orderMode: String,
+    val orderMode: String?,
 
     /**
       * 点餐模式名称
      */
-    val orderModeName: String)
+    val orderModeName: String?)

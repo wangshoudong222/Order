@@ -1,4 +1,4 @@
-package com.julihe.order.ui.order.fragment
+package com.julihe.order.ui.simple.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,17 +11,19 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.julihe.order.R
 import com.julihe.order.databinding.FragmentPayErrorBinding
+import com.julihe.order.databinding.FragmentSimplePayErrorBinding
 import com.julihe.order.model.COMMIT_STATE
 import com.julihe.order.ui.order.SingleViewModel
+import com.julihe.order.ui.simple.SimpleViewModel
 import com.julihe.order.util.MainThreadHandler
 
 /**
  * 支付失败
  */
-class SinglePayErrorFragment : Fragment() {
+class SimplePayErrorFragment : Fragment() {
 
-    private lateinit var binding : FragmentPayErrorBinding
-    private lateinit var viewModel: SingleViewModel
+    private lateinit var binding : FragmentSimplePayErrorBinding
+    private lateinit var viewModel: SimpleViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +34,7 @@ class SinglePayErrorFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentPayErrorBinding.inflate(layoutInflater)
+        binding = FragmentSimplePayErrorBinding.inflate(layoutInflater)
         initView()
         return binding.root
     }
@@ -42,7 +44,7 @@ class SinglePayErrorFragment : Fragment() {
             viewModel.checkState(COMMIT_STATE.REORDER)
         },5000)
 
-        viewModel = ViewModelProvider(activity!!).get(SingleViewModel::class.java)
+        viewModel = ViewModelProvider(activity!!).get(SimpleViewModel::class.java)
         viewModel.sum.observe(activity!!){
             if (it != null) {
                 binding.tvSum.text = it
@@ -73,10 +75,10 @@ class SinglePayErrorFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance() = SinglePayErrorFragment()
+        fun newInstance() = SimplePayErrorFragment()
 
-        const val TAG = "SinglePayErrorFragment"
-        const val REORDER = "SinglePayErrorFragment_REORDER"
+        const val TAG = "SimplePayErrorFragment"
+        const val REORDER = "SimplePayErrorFragment_REORDER"
 
     }
 

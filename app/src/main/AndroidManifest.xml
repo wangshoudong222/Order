@@ -56,6 +56,9 @@
             android:name=".ui.login.LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.simple.SimpleActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.welcome.WelcomeActivity"
             android:launchMode="singleTask">
             <intent-filter>

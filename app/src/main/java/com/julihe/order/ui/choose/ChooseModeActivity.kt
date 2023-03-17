@@ -9,11 +9,13 @@ import android.text.TextUtils
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.julihe.order.databinding.ActivityChooseModeBinding
+import com.julihe.order.model.result.OrderMode
 import com.julihe.order.ui.meal.SetMealActivity
 import com.julihe.order.ui.bind.BindActivity
 import com.julihe.order.ui.order.SingleActivity
 import com.julihe.order.ui.setting.SettingsActivity
 import com.julihe.order.ui.setting.SettingsPresentation
+import com.julihe.order.ui.simple.SimpleActivity
 import com.julihe.order.util.ToastUtil
 
 class ChooseModeActivity : AppCompatActivity() {
@@ -45,15 +47,20 @@ class ChooseModeActivity : AppCompatActivity() {
         }
 
         viewModel.orderModes.observe(this) {
-            if (it != null && it.size >= 2) {
+            if (it != null && it.size > 2) {
                 binding.btn1.text = it[0].orderModeName
                 binding.btn2.text = it[1].orderModeName
+                binding.btn3.text = it[2].orderModeName
             }
         }
 
         viewModel.mode.observe(this) {
-            startActivity(Intent(this, if (MODE_TSLDXJ == it?.orderMode) SingleActivity::class.java else SetMealActivity::class.java))
-            this.finish()
+            it?.let {
+                val intent = Intent(this, if (MODE_TSLDXJ == it.orderMode) SingleActivity::class.java
+                    else if (MODE_QCMS == it.orderMode) SetMealActivity::class.java else SimpleActivity::class.java)
+                startActivity(intent)
+                this.finish()
+            }
         }
     }
 
@@ -70,6 +77,10 @@ class ChooseModeActivity : AppCompatActivity() {
         binding.btn2.setOnClickListener {
             viewModel.setMode(viewModel.orderModes.value?.get(1))
         }
+
+        binding.btn3.setOnClickListener {
+            viewModel.setMode(viewModel.orderModes.value?.get(2))
+        }
     }
 
     private var presentationDisplay: SettingsPresentation? = null
@@ -85,5 +96,6 @@ class ChooseModeActivity : AppCompatActivity() {
     companion object {
         const val MODE_QCMS = "QCMS"
         const val MODE_TSLDXJ = "TSLDXJ"
+        const val MODE_LDJYMS = "LDJYMS"
     }
 }

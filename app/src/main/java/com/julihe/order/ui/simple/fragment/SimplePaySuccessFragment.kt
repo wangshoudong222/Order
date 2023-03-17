@@ -1,27 +1,29 @@
-package com.julihe.order.ui.order.fragment
+package com.julihe.order.ui.simple.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.julihe.order.R
-import com.julihe.order.databinding.FragmentPayErrorBinding
+import com.julihe.order.databinding.FragmentSimpleConfirmBinding
+import com.julihe.order.databinding.FragmentSimplePaySucessBinding
 import com.julihe.order.model.COMMIT_STATE
-import com.julihe.order.ui.order.SingleViewModel
+import com.julihe.order.ui.simple.SimpleViewModel
+import com.julihe.order.util.CommonUtils
 import com.julihe.order.util.MainThreadHandler
 
 /**
- * 支付失败
+ * 支付成功
  */
-class SinglePayErrorFragment : Fragment() {
+class SimplePaySuccessFragment : Fragment() {
 
-    private lateinit var binding : FragmentPayErrorBinding
-    private lateinit var viewModel: SingleViewModel
+    private lateinit var binding : FragmentSimplePaySucessBinding
+    private lateinit var viewModel: SimpleViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,22 +34,17 @@ class SinglePayErrorFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentPayErrorBinding.inflate(layoutInflater)
+        binding = FragmentSimplePaySucessBinding.inflate(layoutInflater)
         initView()
         return binding.root
     }
 
+
     private fun initViewModel() {
-        MainThreadHandler.postDelayed(REORDER, {
+        viewModel = ViewModelProvider(activity!!).get(SimpleViewModel::class.java)
+        MainThreadHandler.postDelayed(REORDER,{
             viewModel.checkState(COMMIT_STATE.REORDER)
         },5000)
-
-        viewModel = ViewModelProvider(activity!!).get(SingleViewModel::class.java)
-        viewModel.sum.observe(activity!!){
-            if (it != null) {
-                binding.tvSum.text = it
-            }
-        }
 
         viewModel.state.observe(this) {
             if (it == COMMIT_STATE.REORDER) {
@@ -64,20 +61,15 @@ class SinglePayErrorFragment : Fragment() {
             binding.info.text = info
             Glide.with(activity!!).load(it.avatar).apply(RequestOptions.bitmapTransform(CircleCrop())).placeholder(R.drawable.head_normal).into(binding.icon)
         }
-        binding.errorMsg.text = viewModel.errorMsg.value
-
-        binding.btnBack.setOnClickListener {
-            MainThreadHandler.removeCallbacks(REORDER)
-            viewModel.checkState(COMMIT_STATE.REORDER)
-        }
+        binding.tvNum.text = viewModel.input.value
+        binding.time.text = CommonUtils.formatToDate(System.currentTimeMillis())
     }
 
+
     companion object {
-        fun newInstance() = SinglePayErrorFragment()
-
-        const val TAG = "SinglePayErrorFragment"
-        const val REORDER = "SinglePayErrorFragment_REORDER"
-
+        fun newInstance() = SimplePaySuccessFragment()
+        const val TAG = "FragmentSimplePaySucessBinding"
+        const val REORDER = "FragmentSimplePaySucessBinding_REORDER"
     }
 
 }
