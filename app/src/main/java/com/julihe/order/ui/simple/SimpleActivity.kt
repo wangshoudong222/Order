@@ -214,6 +214,7 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         LogUtil.d(TAG,if (success == true) "人脸识别成功 token:$fToken; uid:$uid" else "人脸识别失败")
         if (success == true) {
             viewModel.getStudentInfo(uid)
+            viewModel.setToken(fToken)
         } else {
             viewModel.checkState(COMMIT_STATE.SCAN_ERROR)
         }
@@ -221,6 +222,7 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
     override fun onStop() {
         super.onStop()
+        cleanPresentation()
     }
 
     override fun onResume() {
@@ -264,6 +266,13 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
             orderPre = null
         }
         curPre = pre
+    }
+
+    private fun cleanPresentation() {
+        orderPre?.dismiss()
+        orderPre = null
+        payPre?.dismiss()
+        payPre = null
     }
 
     companion object {

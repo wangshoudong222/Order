@@ -30,6 +30,10 @@ data class Student(
      * 学校名称
      */
     val schoolName: String,
+    /**
+     * 学校内标
+     */
+    val instId: String,
 
     /**
      * 学生名称

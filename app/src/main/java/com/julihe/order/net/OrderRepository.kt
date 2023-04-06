@@ -69,6 +69,10 @@ class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
         return callRequest(call = { requestSubmitMealOrder(getRequestBody(JSON.toJSONString(order))) })
     }
 
+    suspend fun submitMealOrderByAlipayFacePay(order: MealOrderFace): NetResult<String?> {
+        return callRequest(call = { requestSubmitMealOrderByAlipayFacePay(getRequestBody(JSON.toJSONString(order))) })
+    }
+
     suspend fun listKitchen(schoolInfo: SchoolInfo): NetResult<List<KitchenInfo>?> {
         return callRequest(call = { requestListKitchen(getRequestBody(JSON.toJSONString(schoolInfo))) })
     }
@@ -144,6 +148,9 @@ class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
 
     private suspend fun requestSubmitMealOrder(body: RequestBody) =
         handleResponse(service.create(RequestApi::class.java).submitMealOrder(body))
+
+    private suspend fun requestSubmitMealOrderByAlipayFacePay(body: RequestBody) =
+        handleResponse(service.create(RequestApi::class.java).submitMealOrderByAlipayFacePay(body))
 
     private suspend fun requestStudentAccount(body: RequestBody) =
         handleResponse(service.create(RequestApi::class.java).getStudentAccount(body))

@@ -15,9 +15,6 @@ import kotlinx.coroutines.launch
 
 class WelcomeViewModel: ViewModel() {
 
-    private val _configRequest = MutableLiveData<Boolean>()
-    val configRequest: LiveData<Boolean> = _configRequest
-
     private val _config = MutableLiveData<Config?>()
     val config: LiveData<Config?> = _config
 
@@ -34,15 +31,13 @@ class WelcomeViewModel: ViewModel() {
                     LogUtil.d(TAG,"getConfig ${JSON.toJSONString(config)}")
                     if (!TextUtils.isEmpty(JSON.toJSONString(config))) {
                         SpUtil.config(JSON.toJSONString(config))
-                        _configRequest.postValue(true)
                         return@launch
                     }
                 }
-                _configRequest.postValue(false)
+                _config.postValue(null)
             } else if (result is NetResult.Error){
                 LogUtil.d(TAG,"getConfig ${result.exception}")
                 SpUtil.config("")
-                _configRequest.postValue(false)
                 _config.postValue(null)
             }
         }

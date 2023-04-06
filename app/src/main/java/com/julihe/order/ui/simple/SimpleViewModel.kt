@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alibaba.fastjson.JSON
+import com.alipay.iot.sdk.APIManager
 import com.julihe.order.model.COMMIT_STATE
 import com.julihe.order.model.request.*
 import com.julihe.order.model.result.*
@@ -13,7 +14,9 @@ import com.julihe.order.net.OrderRepository
 import com.julihe.order.net.model.NetResult
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.sp.SpUtil
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
 class SimpleViewModel : ViewModel() {
@@ -26,6 +29,9 @@ class SimpleViewModel : ViewModel() {
 
     private val _student = MutableLiveData<Student?>()
     val student: LiveData<Student?> = _student
+
+    private val _studentToken = MutableLiveData<String?>()
+    val token: LiveData<String?> = _studentToken
 
     private val _sum = MutableLiveData<String?>()
     val sum: LiveData<String?> = _sum
@@ -63,6 +69,10 @@ class SimpleViewModel : ViewModel() {
 
     private fun setErrorMsg(errorMsg: String?) {
         _errorMsg.postValue(errorMsg)
+    }
+
+    fun setToken(token: String?) {
+        _studentToken.postValue(token)
     }
 
     private fun setMealError(boolean: Boolean?) {
@@ -104,10 +114,12 @@ class SimpleViewModel : ViewModel() {
     fun getCurrentMeal() {
         viewModelScope.launch {
             val result: NetResult<Meal?> = OrderRepository.instance.getCurrentMeal()
+//            val mea = Meal("23:00","16:00","晚餐","dinner")
+//            _currentMeal.postValue(mea)
+//            setMealError(false)
             if (result is NetResult.Success) {
                 if (result.data != null) {
                     val meal = result.data
-                    val mea = Meal("23:00","16:00","晚餐","dinner")
                     LogUtil.d(TAG,"getCurrentMeal ${JSON.toJSONString(meal)}")
                     _currentMeal.postValue(meal)
                     setMealError(false)
@@ -166,13 +178,22 @@ class SimpleViewModel : ViewModel() {
      */
     fun submitMealOrder() {
         viewModelScope.launch {
-            val mealOrder = MealOrder(confirmOrder.value, currentMeal.value?.mealTableCode,
-                currentMeal.value?.mealTableName,student.value?.id)
+            val signature = getTokenSign()
+            LogUtil.d(TAG, "signature:$signature")
+
+            if (TextUtils.isEmpty(signature)) {
+                checkState(COMMIT_STATE.ERROR)
+                setErrorMsg("验签错误，取餐失败")
+                return@launch
+            }
+
+            val mealOrder = MealOrderFace(confirmOrder.value, currentMeal.value?.mealTableCode,
+                currentMeal.value?.mealTableName,student.value?.id, _studentToken.value, signature, student.value?.instId)
             LogUtil.d(TAG,"submitMealOrder mealOrder: ${JSON.toJSONString(mealOrder)}")
-            val result: NetResult<Boolean?> = OrderRepository.instance.submitMealOrder(mealOrder)
-            if (result is NetResult.Success && result.data == true) {
+            val result: NetResult<String?> = OrderRepository.instance.submitMealOrderByAlipayFacePay(mealOrder)
+            if (result is NetResult.Success) {
                 checkState(COMMIT_STATE.SUCCESS)
-                LogUtil.d("取餐成功")
+                LogUtil.d("取餐成功，订单号:${result.data}")
             } else if (result is NetResult.Error){
                 getStudentAccount()
                 LogUtil.d(TAG,"submitMealOrder ${result.exception}")
@@ -180,6 +201,21 @@ class SimpleViewModel : ViewModel() {
                 setErrorMsg(result.exception.msg)
             }
         }
+    }
+
+    private suspend fun getTokenSign(): String? {
+        var sign = ""
+        withContext(Dispatchers.IO) {
+            sign = APIManager.getInstance().paymentAPI.signWithFaceToken(token.value, _input.value)
+//            val result = APIManager.getInstance().paymentAPI.signWithFaceToken(token.value, _input.value)
+//            if (!TextUtils.isEmpty(result)) {
+//                LogUtil.d(TAG, "getTokenSign:$result")
+//                val faceInfo = JSON.parseObject(result, FaceSignature::class.java)
+//                sign = JSON.toJSONString(faceInfo)
+//            }
+
+        }
+        return sign
     }
 
     /**
@@ -221,12 +257,14 @@ class SimpleViewModel : ViewModel() {
         }
     }
 
+
     fun reOrder() {
         _student.postValue(null)
         _sum.postValue(null)
         _confirmOrder.postValue(null)
         _scan.postValue(false)
         _errorMsg.postValue(null)
+        _studentToken.postValue(null)
         _commitState.postValue(COMMIT_STATE.ORDER)
         _input.postValue("0")
         getConfig()

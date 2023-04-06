@@ -59,6 +59,8 @@ interface RequestApi {
     @POST("/api-jlh-bff/canteen/mealOrder/submitMealOrder")
     suspend fun submitMealOrder(@Body body: RequestBody): BaseModel<Boolean?>
 
+    @POST("/api-jlh-bff/canteen/mealOrder/submitMealOrderByAlipayFacePay")
+    suspend fun submitMealOrderByAlipayFacePay(@Body body: RequestBody): BaseModel<String?>
 
     @POST("/api-jlh-bff/canteen/student/getStudentAccount")
     suspend fun getStudentAccount(@Body body: RequestBody): BaseModel<BigDecimal?>

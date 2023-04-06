@@ -44,7 +44,10 @@ class WelcomeActivity : BaseActivity() {
                     jumpActivity(ChooseModeActivity::class.java)
                 }
             } else {
-                jumpActivity(BindActivity::class.java)
+                val intent = Intent(this, BindActivity::class.java)
+                intent.putExtra("data", LoginActivity.START)
+                startActivity(intent)
+                finish()
             }
         }
 

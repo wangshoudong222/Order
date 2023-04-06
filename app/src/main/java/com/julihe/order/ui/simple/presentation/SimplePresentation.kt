@@ -51,6 +51,8 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
         activity = ownerActivity as SimpleActivity
         viewModel = ViewModelProvider(activity).get(SimpleViewModel::class.java)
         viewModel.setInput("0")
+        format.minimumFractionDigits = 2
+        format.maximumFractionDigits = 2
         viewModel.config.observe(activity) {
             if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
                 binding.pSingleTitle.titleName.text = it.schoolName + " " + it.windowName
@@ -105,6 +107,11 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         LogUtil.d(TAG,"keyCode: $keyCode")
         if (viewModel.state.value == COMMIT_STATE.COMMITTING) {
+            if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                reOrder()
+                return true
+            }
+
             return super.onKeyDown(keyCode, event)
         }
         when (keyCode) {
@@ -145,6 +152,9 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
             // 点
             KeyEvent.KEYCODE_NUMPAD_DOT -> {
                 if (!codeInput.toString().contains(".")) {
+                    if (codeInput.isEmpty()) {
+                        codeInput.append("0")
+                    }
                     codeInput.append(".")
                     sync()
                 }
@@ -216,7 +226,7 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
     }
 
     private fun sync() {
-        val s = codeInput.toString().format(DecimalFormat("0.00"))
+        val s = codeInput.toString().format(format)
         viewModel.setInput(s)
     }
 
@@ -234,7 +244,7 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
     }
 
     private fun reOrder() {
-        preInput = 0.0
+        preInput = 0.00
         viewModel.setInput("0")
         if (codeInput.isNotEmpty()) {
             codeInput.clear()

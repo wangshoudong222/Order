@@ -92,10 +92,14 @@ class SimplePayPresentation(outerContext: Context?, display: Display?) :
                     binding.bottomSuccess.visibility = View.GONE
                     binding.centerSuccess.visibility = View.GONE
                     binding.centerError.visibility = View.VISIBLE
-                    LogUtil.d(TAG, "errorMsg:" +viewModel.errorMsg.value)
-                    binding.errorMsg.text = viewModel.errorMsg.value
+
                 }
             }
+        }
+
+        viewModel.errorMsg.observe(activity) {
+            LogUtil.d(TAG, "errorMsg:$it")
+            binding.errorMsg.text = it
         }
     }
 
