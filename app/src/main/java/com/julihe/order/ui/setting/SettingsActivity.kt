@@ -31,7 +31,10 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun initView() {
         binding.settingTitle.titleSetting.visibility = View.GONE
-        binding.btnExit.setOnClickListener { this.finish() }
+        binding.btnExit.setOnClickListener {
+            startActivity(Intent(this, ChooseModeActivity::class.java))
+            this.finish()
+        }
         binding.btnCheck.setOnClickListener {
             startActivity(Intent(this, ChooseModeActivity::class.java))
             this.finish()

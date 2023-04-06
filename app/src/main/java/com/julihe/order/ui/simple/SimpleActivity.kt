@@ -155,7 +155,9 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         binding.setSingleTitle.titleSetting.visibility = View.VISIBLE
         binding.setSingleTitle.titleSetting.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
+            this.finish()
         }
+        addPresentation(curPre)
     }
 
     private fun initFragment(savedInstanceState: Bundle?) {
@@ -208,9 +210,6 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     }
 
     override fun onVerifyResult(success: Boolean?, fToken: String?, uid: String?) {
-        runOnUiThread{
-            ToastUtil.show(if (success == true) "人脸识别成功" else "人脸识别失败")
-        }
         LogUtil.d(TAG,if (success == true) "人脸识别成功 token:$fToken; uid:$uid" else "人脸识别失败")
         if (success == true) {
             viewModel.getStudentInfo(uid)
@@ -222,12 +221,10 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
     override fun onStop() {
         super.onStop()
-        cleanPresentation()
     }
 
     override fun onResume() {
         super.onResume()
-        addPresentation(curPre)
     }
 
     override fun onDestroy() {
@@ -266,13 +263,6 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
             orderPre = null
         }
         curPre = pre
-    }
-
-    private fun cleanPresentation() {
-        orderPre?.dismiss()
-        orderPre = null
-        payPre?.dismiss()
-        payPre = null
     }
 
     companion object {

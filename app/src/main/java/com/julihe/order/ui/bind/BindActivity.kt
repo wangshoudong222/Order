@@ -75,10 +75,7 @@ class BindActivity : AppCompatActivity() {
         }
 
         binding.btnExit.setOnClickListener {
-            val data = intent.getStringExtra("data")
-            if (data == LoginActivity.START && viewModel.configRequest.value == true) {
-                startActivity(Intent(this, ChooseModeActivity::class.java))
-            }
+            startActivity(Intent(this, ChooseModeActivity::class.java))
             this.finish()
         }
 

@@ -20,6 +20,7 @@ import com.julihe.order.ui.meal.presentation.MealConfirmPresentation
 import com.julihe.order.ui.meal.presentation.WaitPresentation
 import com.julihe.order.ui.order.SingleActivity
 import com.julihe.order.ui.setting.SettingsActivity
+import com.julihe.order.ui.simple.SimpleActivity
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.MainThreadHandler
 import com.julihe.order.util.ToastUtil
@@ -165,11 +166,13 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
         binding.setMealTitle.titleSetting.visibility = View.VISIBLE
         binding.setMealTitle.titleSetting.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
+            this.finish()
         }
 
         binding.btnScan.setOnClickListener {
             startScan()
         }
+        addPresentation(curPre)
     }
 
     private fun showSuccessDialog() {
@@ -255,7 +258,6 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
     override fun onResume() {
         super.onResume()
         Log.w(TAG, "onResume")
-        addPresentation(curPre)
     }
 
     override fun onDestroy() {

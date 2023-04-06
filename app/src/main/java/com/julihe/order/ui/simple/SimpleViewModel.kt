@@ -105,6 +105,8 @@ class SimpleViewModel : ViewModel() {
     }
 
     fun checkState(state: COMMIT_STATE) {
+        LogUtil.d(TAG, "checkState:${state.name}")
+
         _commitState.postValue(state)
     }
 
@@ -166,9 +168,15 @@ class SimpleViewModel : ViewModel() {
                     _student.postValue(student)
                 } else {
                     LogUtil.d("未获取到该学生信息")
+                    _student.postValue(null)
+                    checkState(COMMIT_STATE.ERROR)
+                    setErrorMsg("未获取到该学生信息")
                 }
             } else if (result is NetResult.Error){
                 LogUtil.d(TAG,"getStudentInfo ${result.exception}")
+                _student.postValue(null)
+                checkState(COMMIT_STATE.ERROR)
+                setErrorMsg(result.exception.msg)
             }
         }
     }

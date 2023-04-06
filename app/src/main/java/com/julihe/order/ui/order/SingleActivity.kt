@@ -149,7 +149,9 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         binding.setSingleTitle.titleSetting.visibility = View.VISIBLE
         binding.setSingleTitle.titleSetting.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
+            this.finish()
         }
+        addPresentation(curPre)
     }
 
     private fun initFragment(savedInstanceState: Bundle?) {
@@ -218,7 +220,6 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
     override fun onResume() {
         super.onResume()
-        addPresentation(curPre)
     }
 
     override fun onDestroy() {
