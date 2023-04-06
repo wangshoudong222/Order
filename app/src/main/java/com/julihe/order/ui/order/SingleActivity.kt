@@ -275,6 +275,6 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         const val CONFIRM_PRE = "CONFIRM_PRE"
         const val TAG_MEAL_ERROR = "SingleActivity_TAG_MEAL_ERROR"
 
-        var TYPE = SmileManager.SCAN_TYPE_APPROACH_SINGLE
+        var TYPE = SmileManager.SCAN_TYPE_NORMAL
     }
 }

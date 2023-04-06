@@ -3,28 +3,20 @@ package com.julihe.order.ui.simple
 import android.content.Context
 import android.content.Intent
 import android.media.MediaRouter
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.julihe.order.R
 import com.julihe.order.databinding.ActivitySingleBinding
-import com.julihe.order.event.ConfirmEvent
 import com.julihe.order.model.COMMIT_STATE
 import com.julihe.order.smile.IsvInfo
 import com.julihe.order.smile.SmileManager
 import com.julihe.order.ui.bind.BindActivity
-import com.julihe.order.ui.meal.SetMealActivity
-import com.julihe.order.ui.order.SingleActivity
-import com.julihe.order.ui.order.fragment.SingleConfirmFragment
-import com.julihe.order.ui.order.fragment.SingleOrderFragment
-import com.julihe.order.ui.order.fragment.SinglePayErrorFragment
-import com.julihe.order.ui.order.fragment.SinglePayFragment
-import com.julihe.order.ui.order.presentation.ConfirmPresentation
 import com.julihe.order.ui.order.presentation.SinglePresentation
 import com.julihe.order.ui.setting.SettingsActivity
 import com.julihe.order.ui.simple.fragment.SimpleConfirmFragment
@@ -36,9 +28,6 @@ import com.julihe.order.ui.simple.presentation.SimplePresentation
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.MainThreadHandler
 import com.julihe.order.util.ToastUtil
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 /**
  * 简约模式
@@ -271,6 +260,6 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         const val ORDER_PRE = "ORDER_PRE"
         const val PAY_PRE = "PAY_PRE"
 
-        var TYPE = SmileManager.SCAN_TYPE_APPROACH_SINGLE
+        var TYPE = SmileManager.SCAN_TYPE_NORMAL
     }
 }

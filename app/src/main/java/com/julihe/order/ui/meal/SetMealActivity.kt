@@ -269,7 +269,7 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
 
     companion object {
         const val TAG = "SetMealActivity"
-        var TYPE = SmileManager.SCAN_TYPE_APPROACH_SINGLE
+        var TYPE = SmileManager.SCAN_TYPE_NORMAL
 
         const val WAIT_PRE = "WAIT_PRE"
         const val CONFIRM_PRE = "CONFIRM_PRE"

@@ -35,12 +35,12 @@ class NormalScanFacePresenter(override val zoloz: Zoloz) : BaseScanFacePresenter
         // 必填项，取值：0～1000mm，建议值：750mm
         configInfo[ZolozConfig.KEY_ALGORITHM_MAX_DETECT_DISTANCE] = 750
         
-        // UI
-        val uiJson = JSONObject()
-        uiJson[ZolozConfig.KEY_UI_PAY_AMOUNT] = "0.02"
+//        // UI
+//        val uiJson = JSONObject()
+//        uiJson[ZolozConfig.KEY_UI_PAY_AMOUNT] = "0.02"
 
         zolozConfig[ZolozConfig.KEY_ZOLOZ_CONFIG] = configInfo.toJSONString()
-        zolozConfig[ZolozConfig.KEY_UI_CONFIG] = uiJson.toJSONString()
+//        zolozConfig[ZolozConfig.KEY_UI_CONFIG] = uiJson.toJSONString()
 
         Log.i(TAG,"scanParams : ${JSON.toJSONString(zolozConfig)}")
         return zolozConfig
