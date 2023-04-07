@@ -3,6 +3,11 @@ package com.julihe.order.smile;
 import android.content.Context;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
+import com.alipay.zoloz.smile2pay.QueryCallback;
+import com.alipay.zoloz.smile2pay.ZolozConfig;
+import com.alipay.zoloz.smile2pay.general.GeneralCallback;
+import com.alipay.zoloz.smile2pay.general.GeneralResponse;
 import com.julihe.order.smile.presenter.ApproachSingleScanFacePresenter;
 import com.julihe.order.smile.presenter.IScanFacePresenter;
 import com.julihe.order.smile.presenter.NormalScanFacePresenter;
@@ -11,8 +16,10 @@ import com.alipay.zoloz.smile2pay.InstallCallback;
 import com.alipay.zoloz.smile2pay.Zoloz;
 import com.alipay.zoloz.smile2pay.ZolozConstants;
 import com.alipay.zoloz.smile2pay.verify.Smile2PayResponse;
+import com.julihe.order.util.LogUtil;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 1. 实例化SmileManager: SmileManager(MetaInfo mMetaInfo, Context context)
@@ -84,6 +91,7 @@ public class SmileManager {
                     if (scanType != 0) {
                         scanFace(scanType,verifyListener);
                     }
+                    updateQuery();
                 } else {
                     // 初始化或刷脸异常
                     isInitSuccess = false;
@@ -95,6 +103,33 @@ public class SmileManager {
         mZoloz.setConnectCallback((b, componentName) -> {
             Log.i(TAG, b ? "smile服务已连接" : "smile断开连接");
             isInitSuccess = b;
+        });
+
+    }
+
+    private void updateQuery() {
+        QueryCallback queryCallback = new QueryCallback() {
+            @Override
+            public void onQuery(Map<String, Object> map) {
+                if (map != null) {
+                    LogUtil.d("updateQuery:"+JSON.toJSONString(map));
+                }
+            }
+            @Override
+            public void onError(int code, String message) {
+            }
+        };
+        // 查询机具本地学校库信息，可查询库总量和最近更新信息，注意区分不同Action
+        mZoloz.query(QueryCallback.Action.ACTION_FACE_DB, null, queryCallback);
+        // 机具端主动触发更新学校库信息，可在机具端收银apk通过接口调用更新该机具学校库
+        HashMap<String, Object> extInfo = new HashMap<>();
+        extInfo.put(ZolozConfig.KEY_CALL_TYPE_UPDATE_FACE_TIMEOUT, 6000); // 超时6s
+        mZoloz.call(ZolozConfig.CallType.TYPE_UPDATE_FACE_INFO, extInfo, new GeneralCallback() {
+            @Override
+            public void onResponse(GeneralResponse generalResponse) {
+                String response = (generalResponse != null) ? generalResponse.toString() : "response is empty";
+                LogUtil.d(TAG, "onResponse:" + response);
+            }
         });
     }
 

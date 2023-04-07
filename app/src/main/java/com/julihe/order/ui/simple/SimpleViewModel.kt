@@ -116,9 +116,10 @@ class SimpleViewModel : ViewModel() {
     fun getCurrentMeal() {
         viewModelScope.launch {
             val result: NetResult<Meal?> = OrderRepository.instance.getCurrentMeal()
-//            val mea = Meal("23:00","16:00","晚餐","dinner")
+//            val mea = Meal("12:40","11:40","午餐","lunch")
 //            _currentMeal.postValue(mea)
 //            setMealError(false)
+
             if (result is NetResult.Success) {
                 if (result.data != null) {
                     val meal = result.data
