@@ -26,6 +26,7 @@ class SimpleOrderFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSimpleOrderBinding.inflate(layoutInflater)
+        initView()
         initViewModel()
         return binding.root
     }

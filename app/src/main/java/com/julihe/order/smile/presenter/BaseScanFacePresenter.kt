@@ -25,7 +25,7 @@ abstract class BaseScanFacePresenter : VerifyCallback() , IScanFacePresenter {
     abstract val zoloz : Zoloz
 
     @CallSuper
-    open fun scanParams() : HashMap<String,Any> {
+    open fun scanParams(num: String) : HashMap<String,Any> {
         val zolozConfig = java.util.HashMap<String, Any>()
         // Smile透传键盘事件
         zolozConfig["keyboardEventEnabled"] = keyboardEventEnabled
@@ -33,7 +33,7 @@ abstract class BaseScanFacePresenter : VerifyCallback() , IScanFacePresenter {
     }
 
     @CallSuper
-    override fun scanFace(listener: SmileManager.OnScanFaceResultListener?) : Boolean {
+    override fun scanFace(listener: SmileManager.OnScanFaceResultListener?, num: String) : Boolean {
         if(mIsStartScan.compareAndSet(true,true)){
             Log.w(TAG,"already start scan , return")
             return false

@@ -220,12 +220,12 @@ class SetMealActivity : AppCompatActivity(), SmileManager.OnInstallResultListene
     private fun initSmile() {
         Log.d(TAG, "initSmileManger")
         mSmileManager =
-            SmileManager(IsvInfo.ISV_INFO, this)
+            SmileManager(IsvInfo.getInfo(), this)
         mSmileManager?.initScan(this)
     }
 
     private fun startScan() {
-        mSmileManager?.startSmile(TYPE,this, this)
+        mSmileManager?.startSmile(TYPE,this, this ,"0")
     }
 
     override fun onInstallResult(isSuccess: Boolean, errMsg: String?) {

@@ -19,7 +19,6 @@ import com.julihe.order.smile.SmileManager
 import com.julihe.order.ui.bind.BindActivity
 import com.julihe.order.ui.order.presentation.SinglePresentation
 import com.julihe.order.ui.setting.SettingsActivity
-import com.julihe.order.ui.simple.fragment.SimpleConfirmFragment
 import com.julihe.order.ui.simple.fragment.SimpleOrderFragment
 import com.julihe.order.ui.simple.fragment.SimplePayErrorFragment
 import com.julihe.order.ui.simple.fragment.SimplePaySuccessFragment
@@ -28,6 +27,11 @@ import com.julihe.order.ui.simple.presentation.SimplePresentation
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.MainThreadHandler
 import com.julihe.order.util.ToastUtil
+import com.alipay.iot.sdk.APIManager
+
+import com.alipay.iot.sdk.voice.VoiceAPI
+import com.julihe.order.smile.PlayVoiceManager
+
 
 /**
  * 简约模式
@@ -38,10 +42,9 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     private lateinit var binding : ActivitySingleBinding
     private lateinit var viewModel: SimpleViewModel
     private lateinit var orderFragment: SimpleOrderFragment
-    private lateinit var confirmFragment: SimpleConfirmFragment
     private lateinit var paySuccessFragment: SimplePaySuccessFragment
     private lateinit var payErrorFragment: SimplePayErrorFragment
-
+    private var loadingPop: LoadingPop? = null
     private var mSmileManager: SmileManager? = null
     private var curPre = ORDER_PRE
 
@@ -103,6 +106,7 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
             when(it) {
                 COMMIT_STATE.ORDER -> {
                     LogUtil.d(TAG,"正在点餐")
+                    dismissDialog()
                 }
 
                 COMMIT_STATE.REORDER -> {
@@ -110,11 +114,14 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
                     viewModel.reOrder()
                     replaceFragment(orderFragment)
                     addPresentation(ORDER_PRE)
+                    dismissDialog()
                 }
 
                 COMMIT_STATE.COMMITTING -> {
                     LogUtil.d(TAG,"正在提交")
-                    replaceFragment(confirmFragment)
+                    PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_SCAN_FACE)
+                    viewModel.doScan(true)
+                    showDialog()
                 }
 
                 COMMIT_STATE.SCANNING -> {
@@ -125,12 +132,16 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
                     ToastUtil.show("取餐成功")
                     addPresentation(PAY_PRE)
                     replaceFragment(paySuccessFragment)
+                    PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_SUCCESS)
+                    dismissDialog()
                 }
 
                 COMMIT_STATE.ERROR -> {
                     ToastUtil.show("取餐失败")
                     addPresentation(PAY_PRE)
                     replaceFragment(payErrorFragment)
+                    PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_ERROR)
+                    dismissDialog()
                 }
 
                 else -> {
@@ -151,7 +162,6 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
     private fun initFragment(savedInstanceState: Bundle?) {
         orderFragment = SimpleOrderFragment.newInstance()
-        confirmFragment = SimpleConfirmFragment.newInstance()
         paySuccessFragment = SimplePaySuccessFragment.newInstance()
         payErrorFragment = SimplePayErrorFragment.newInstance()
 
@@ -185,13 +195,12 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
      */
     private fun initSmile() {
         LogUtil.d(TAG, "initSmileManger")
-        mSmileManager =
-            SmileManager(IsvInfo.ISV_INFO, this)
+        mSmileManager = SmileManager(IsvInfo.getInfo(), this)
         mSmileManager?.initScan(this)
     }
 
     private fun startScan() {
-        mSmileManager?.startSmile(TYPE,this, this)
+        mSmileManager?.startSmile(TYPE,this, this, viewModel.input.value)
     }
 
     override fun onInstallResult(isSuccess: Boolean, errMsg: String?) {
@@ -220,6 +229,8 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         super.onDestroy()
         mSmileManager?.onDestroy(TYPE)
         MainThreadHandler.removeCallbacks(TAG_MEAL_ERROR)
+        dismissDialog()
+        loadingPop = null
         Log.w(TAG, "onDestroy")
     }
 
@@ -252,6 +263,17 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
             orderPre = null
         }
         curPre = pre
+    }
+
+   private fun showDialog() {
+        if (loadingPop == null) {
+            loadingPop = LoadingPop()
+        }
+       loadingPop?.show(supportFragmentManager,"loading")
+   }
+
+    private fun dismissDialog() {
+        loadingPop?.dismiss()
     }
 
     companion object {

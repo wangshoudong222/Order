@@ -16,6 +16,7 @@ import com.julihe.order.databinding.ActivitySingleBinding
 import com.julihe.order.event.ConfirmEvent
 import com.julihe.order.model.COMMIT_STATE
 import com.julihe.order.smile.IsvInfo
+import com.julihe.order.smile.PlayVoiceManager
 import com.julihe.order.smile.SmileManager
 import com.julihe.order.ui.bind.BindActivity
 import com.julihe.order.ui.meal.SetMealActivity
@@ -120,6 +121,7 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
                 COMMIT_STATE.COMMITTING -> {
                     LogUtil.d(TAG,"正在提交")
+                    PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_SCAN_FACE)
                 }
 
                 COMMIT_STATE.SCANNING -> {
@@ -130,12 +132,14 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
                     ToastUtil.show("取餐成功")
                     addPresentation(CONFIRM_PRE)
                     replaceFragment(paySFragment)
+                    PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_SUCCESS)
                 }
 
                 COMMIT_STATE.ERROR -> {
                     ToastUtil.show("取餐失败")
                     addPresentation(CONFIRM_PRE)
                     replaceFragment(payErrorFragment)
+                    PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_ERROR)
                 }
 
                 else -> {
@@ -190,12 +194,12 @@ class SingleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     private fun initSmile() {
         LogUtil.d(TAG, "initSmileManger")
         mSmileManager =
-            SmileManager(IsvInfo.ISV_INFO, this)
+            SmileManager(IsvInfo.getInfo(), this)
         mSmileManager?.initScan(this)
     }
 
     private fun startScan() {
-        mSmileManager?.startSmile(TYPE,this, this)
+        mSmileManager?.startSmile(TYPE,this, this, viewModel.total.value?.toFloat().toString())
     }
 
     override fun onInstallResult(isSuccess: Boolean, errMsg: String?) {

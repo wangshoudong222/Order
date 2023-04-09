@@ -216,13 +216,6 @@ class SimpleViewModel : ViewModel() {
         var sign = ""
         withContext(Dispatchers.IO) {
             sign = APIManager.getInstance().paymentAPI.signWithFaceToken(token.value, _input.value)
-//            val result = APIManager.getInstance().paymentAPI.signWithFaceToken(token.value, _input.value)
-//            if (!TextUtils.isEmpty(result)) {
-//                LogUtil.d(TAG, "getTokenSign:$result")
-//                val faceInfo = JSON.parseObject(result, FaceSignature::class.java)
-//                sign = JSON.toJSONString(faceInfo)
-//            }
-
         }
         return sign
     }

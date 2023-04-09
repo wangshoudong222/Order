@@ -8,10 +8,8 @@ import com.alipay.zoloz.smile2pay.QueryCallback;
 import com.alipay.zoloz.smile2pay.ZolozConfig;
 import com.alipay.zoloz.smile2pay.general.GeneralCallback;
 import com.alipay.zoloz.smile2pay.general.GeneralResponse;
-import com.julihe.order.smile.presenter.ApproachSingleScanFacePresenter;
 import com.julihe.order.smile.presenter.IScanFacePresenter;
 import com.julihe.order.smile.presenter.NormalScanFacePresenter;
-import com.julihe.order.smile.presenter.ApproachContinuityScanFacePresenter;
 import com.alipay.zoloz.smile2pay.InstallCallback;
 import com.alipay.zoloz.smile2pay.Zoloz;
 import com.alipay.zoloz.smile2pay.ZolozConstants;
@@ -57,27 +55,25 @@ public class SmileManager {
         mZoloz = Zoloz.getInstance(context);
 
         mSmilePresenters.put(SCAN_TYPE_NORMAL, new NormalScanFacePresenter(mZoloz));
-        mSmilePresenters.put(SCAN_TYPE_APPROACH_SINGLE, new ApproachSingleScanFacePresenter(mZoloz));
-        mSmilePresenters.put(SCAN_TYPE_APPROACH_CONTINUITY, new ApproachContinuityScanFacePresenter(mZoloz));
 
     }
 
-    public void startSmile(int scanType, OnInstallResultListener listener, OnScanFaceResultListener verifyListener) {
+    public void startSmile(int scanType, OnInstallResultListener listener, OnScanFaceResultListener verifyListener, String num) {
         Log.d(TAG, "开始人脸识别：startSmile");
         if (isInitSuccess) {
             listener.onInstallResult(true,"");
-            scanFace(scanType, verifyListener);
+            scanFace(scanType, verifyListener, num);
             return;
         }
         Log.d(TAG, "未初始化，重新初始化");
-        initScan(scanType, listener, verifyListener);
+        initScan(scanType, listener, verifyListener, num);
     }
 
     public void initScan(OnInstallResultListener listener) {
-        initScan(0,listener, null);
+        initScan(0,listener, null, "0.0");
     }
 
-    private void initScan(int scanType, OnInstallResultListener listener, OnScanFaceResultListener verifyListener) {
+    private void initScan(int scanType, OnInstallResultListener listener, OnScanFaceResultListener verifyListener, String num) {
         mZoloz.install(packageInstallData());
         // 监听初始化结果
         mZoloz.register(null, new InstallCallback() {
@@ -89,7 +85,7 @@ public class SmileManager {
                     // 初始化成功,唤起刷脸
                     isInitSuccess = true;
                     if (scanType != 0) {
-                        scanFace(scanType,verifyListener);
+                        scanFace(scanType,verifyListener,num);
                     }
                     updateQuery();
                 } else {
@@ -134,13 +130,13 @@ public class SmileManager {
     }
 
 
-    private void scanFace(int scanType, OnScanFaceResultListener listener) {
+    private void scanFace(int scanType, OnScanFaceResultListener listener, String num) {
         if (!isInitSuccess) {
             mZoloz.install(packageInstallData());
             return;
         }
 
-        mSmilePresenters.get(scanType).scanFace(listener);
+        mSmilePresenters.get(scanType).scanFace(listener,num);
     }
 
     private HashMap<String, Object> packageInstallData() {
@@ -184,6 +180,4 @@ public class SmileManager {
             this.merchantPayPid = merchantPayPid;
         }
     }
-
-
 }

@@ -6,7 +6,7 @@ import com.julihe.order.smile.SmileManager
  * 扫脸
  */
 interface IScanFacePresenter {
-    fun scanFace(listener: SmileManager.OnScanFaceResultListener?): Boolean
+    fun scanFace(listener: SmileManager.OnScanFaceResultListener?, num: String): Boolean
 
     fun continueScan()
 

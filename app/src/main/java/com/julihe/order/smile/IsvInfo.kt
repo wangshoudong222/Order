@@ -1,5 +1,7 @@
 package com.julihe.order.smile
 
+import com.alibaba.fastjson.JSON
+import com.julihe.order.model.result.Config
 import com.julihe.order.smile.SmileManager.MetaInfo
 import com.julihe.order.util.sp.SpUtil
 
@@ -13,6 +15,18 @@ object IsvInfo {
         "K12_3113013556",
         SpUtil.deviceId(),
         "2088541566333127")
+
+    fun getInfo():MetaInfo {
+        val config = JSON.parseObject(SpUtil.config(), Config::class.java)
+       return  MetaInfo(
+           config.instId,
+           config.schoolName,
+           "2088541567616841",
+           "beijingjulihe",
+           config.schoolFaceId,
+           SpUtil.deviceId(),
+           config.schoolPaymentUserId)
+    }
     /**
      * isvPid : 2088541567616841
      * ISV英文名称（isv_name）：beijingjulihe

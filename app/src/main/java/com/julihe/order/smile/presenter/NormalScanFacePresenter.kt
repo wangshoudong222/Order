@@ -12,19 +12,16 @@ import com.julihe.order.smile.SmileManager
  */
 class NormalScanFacePresenter(override val zoloz: Zoloz) : BaseScanFacePresenter() {
 
-    override fun scanFace(
-        listener: SmileManager.OnScanFaceResultListener?
-    ): Boolean {
-        return if(super.scanFace(listener)){
-            zoloz.verify(scanParams(),this)
+    override fun scanFace(listener: SmileManager.OnScanFaceResultListener?, num: String): Boolean {
+        return if(super.scanFace(listener, num)){
+            zoloz.verify(scanParams(num),this)
             true
         } else false
     }
 
 
-
-    override fun scanParams(): HashMap<String, Any> {
-        val zolozConfig = super.scanParams()
+    override fun scanParams(num: String): HashMap<String, Any> {
+        val zolozConfig = super.scanParams(num)
 
         zolozConfig[ZolozConfig.KEY_CAPTURE_UI_MODE] = ZolozConfig.CaptureUIMode.CLICK
 
@@ -35,12 +32,12 @@ class NormalScanFacePresenter(override val zoloz: Zoloz) : BaseScanFacePresenter
         // 必填项，取值：0～1000mm，建议值：750mm
         configInfo[ZolozConfig.KEY_ALGORITHM_MAX_DETECT_DISTANCE] = 750
         
-//        // UI
-//        val uiJson = JSONObject()
-//        uiJson[ZolozConfig.KEY_UI_PAY_AMOUNT] = "0.02"
+        // 设置金额
+        val uiJson = JSONObject()
+        uiJson[ZolozConfig.KEY_UI_PAY_AMOUNT] = num
 
         zolozConfig[ZolozConfig.KEY_ZOLOZ_CONFIG] = configInfo.toJSONString()
-//        zolozConfig[ZolozConfig.KEY_UI_CONFIG] = uiJson.toJSONString()
+        zolozConfig[ZolozConfig.KEY_UI_CONFIG] = uiJson.toJSONString()
 
         Log.i(TAG,"scanParams : ${JSON.toJSONString(zolozConfig)}")
         return zolozConfig

@@ -57,8 +57,8 @@ abstract class BaseApproachPresenter : BaseScanFacePresenter() , IApproachScanFa
 
     abstract fun onTrigger()
 
-    override fun scanFace(listener: SmileManager.OnScanFaceResultListener?): Boolean {
-        return if(super.scanFace(listener)){
+    override fun scanFace(listener: SmileManager.OnScanFaceResultListener?, num: String): Boolean {
+        return if(super.scanFace(listener,num)){
             // 开启进场检测
             Log.d(TAG,"scanFace : approach")
             approach(approachParams())
