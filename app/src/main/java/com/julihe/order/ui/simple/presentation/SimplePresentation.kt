@@ -4,6 +4,7 @@ import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.Display
 import android.view.KeyEvent
 import android.view.View
@@ -104,119 +105,124 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
     }
 
     @Synchronized
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        LogUtil.d(TAG,"keyCode: $keyCode")
-        if (viewModel.state.value == COMMIT_STATE.COMMITTING) {
-            if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
-                reOrder()
-                return true
-            }
-
-            return super.onKeyDown(keyCode, event)
-        }
-        when (keyCode) {
-            // 确认键
-            KeyEvent.KEYCODE_NUMPAD_ENTER,KeyEvent.KEYCODE_ENTER -> {
-                add()
-                viewModel.confirmOrder()
-                viewModel.checkState(COMMIT_STATE.COMMITTING)
-            }
-            // 删除键
-            KeyEvent.KEYCODE_DEL -> {
-                dle()
-                return true
-            }
-            // 取消键
-            KeyEvent.KEYCODE_ESCAPE -> {
-                reOrder()
-                return true
-            }
-            // 设置键
-            KeyEvent.KEYCODE_F1 -> {
-                return true
-            }
-            // 功能键
-            KeyEvent.KEYCODE_F2 -> {
-                return true
-            }
-            // 下
-            KeyEvent.KEYCODE_DPAD_DOWN -> {
-
-                return true
-            }
-            // 上
-            KeyEvent.KEYCODE_DPAD_UP -> {
-
-                return true
-            }
-            // 点
-            KeyEvent.KEYCODE_NUMPAD_DOT -> {
-                if (!codeInput.toString().contains(".")) {
-                    if (codeInput.isEmpty()) {
-                        codeInput.append("0")
-                    }
-                    codeInput.append(".")
-                    sync()
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if(CommonUtils.getKeyIntercept(event.keyCode) && event.action == KeyEvent.ACTION_DOWN) {
+            if (viewModel.state.value == COMMIT_STATE.COMMITTING || viewModel.state.value == COMMIT_STATE.SCANNING) {
+                if (event.keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                    reOrder()
+                    viewModel.reOrder()
+                    return true
                 }
-                return true
+
+                return super.dispatchKeyEvent(event)
             }
-            // 加
-            KeyEvent.KEYCODE_NUMPAD_ADD -> {
-                add()
-                return true
+            when (event.keyCode) {
+                // 确认键
+                KeyEvent.KEYCODE_NUMPAD_ENTER,KeyEvent.KEYCODE_ENTER -> {
+                    add()
+                    viewModel.confirmOrder()
+                    viewModel.checkState(COMMIT_STATE.COMMITTING)
+                }
+                // 删除键
+                KeyEvent.KEYCODE_DEL -> {
+                    dle()
+                    return true
+                }
+                // 取消键
+                KeyEvent.KEYCODE_ESCAPE -> {
+                    reOrder()
+                    viewModel.reOrder()
+                    return true
+                }
+                // 设置键
+                KeyEvent.KEYCODE_F1 -> {
+                    return true
+                }
+                // 功能键
+                KeyEvent.KEYCODE_F2 -> {
+                    return true
+                }
+                // 下
+                KeyEvent.KEYCODE_DPAD_DOWN -> {
+
+                    return true
+                }
+                // 上
+                KeyEvent.KEYCODE_DPAD_UP -> {
+
+                    return true
+                }
+                // 点
+                KeyEvent.KEYCODE_NUMPAD_DOT -> {
+                    if (!codeInput.toString().contains(".")) {
+                        if (codeInput.isEmpty()) {
+                            codeInput.append("0")
+                        }
+                        codeInput.append(".")
+                        sync()
+                    }
+                    return true
+                }
+                // 加
+                KeyEvent.KEYCODE_NUMPAD_ADD -> {
+                    add()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_1 -> {
+                    codeInput.append("1")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_2 -> {
+                    codeInput.append("2")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_3 -> {
+                    codeInput.append("3")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_4 -> {
+                    codeInput.append("4")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_5 -> {
+                    codeInput.append("5")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_6 -> {
+                    codeInput.append("6")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_7 -> {
+                    codeInput.append("7")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_8 -> {
+                    codeInput.append("8")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_9 -> {
+                    codeInput.append("9")
+                    sync()
+                    return true
+                }
+                KeyEvent.KEYCODE_NUMPAD_0 -> {
+                    codeInput.append("0")
+                    sync()
+                    return true
+                }
             }
-            KeyEvent.KEYCODE_NUMPAD_1 -> {
-                codeInput.append("1")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_2 -> {
-                codeInput.append("2")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_3 -> {
-                codeInput.append("3")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_4 -> {
-                codeInput.append("4")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_5 -> {
-                codeInput.append("5")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_6 -> {
-                codeInput.append("6")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_7 -> {
-                codeInput.append("7")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_8 -> {
-                codeInput.append("8")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_9 -> {
-                codeInput.append("9")
-                sync()
-                return true
-            }
-            KeyEvent.KEYCODE_NUMPAD_0 -> {
-                codeInput.append("0")
-                sync()
-                return true
-            }
+            return false
         }
-        return super.onKeyDown(keyCode, event)
+
+        return super.dispatchKeyEvent(event)
     }
 
     private fun dle() {
@@ -226,6 +232,7 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
     }
 
     private fun sync() {
+        LogUtil.d(TAG, "sync codeInput:$codeInput")
         val s = codeInput.toString().format(format)
         viewModel.setInput(s)
     }
@@ -246,9 +253,7 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
     private fun reOrder() {
         preInput = 0.00
         viewModel.setInput("0")
-        if (codeInput.isNotEmpty()) {
-            codeInput.clear()
-        }
+        codeInput.setLength(0)
     }
 
     companion object {

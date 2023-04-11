@@ -143,7 +143,6 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
                     PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_ERROR)
                     dismissDialog()
                 }
-
                 else -> {
 
                 }
@@ -213,7 +212,15 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
             viewModel.getStudentInfo(uid)
             viewModel.setToken(fToken)
         } else {
-            viewModel.checkState(COMMIT_STATE.SCAN_ERROR)
+            when (fToken) {
+                CANCEL_SCAN, CANCEL_ORDER-> {
+                    PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_CANCEL)
+                }
+                else -> {
+                    PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_ERROR)
+                }
+            }
+            viewModel.checkState(COMMIT_STATE.REORDER)
         }
     }
 
@@ -281,6 +288,8 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         const val TAG_MEAL_ERROR = "TAG_MEAL_ERROR"
         const val ORDER_PRE = "ORDER_PRE"
         const val PAY_PRE = "PAY_PRE"
+        const val CANCEL_SCAN = "Z6002"
+        const val CANCEL_ORDER = "Z1008"
 
         var TYPE = SmileManager.SCAN_TYPE_NORMAL
     }
