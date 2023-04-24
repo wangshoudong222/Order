@@ -67,6 +67,13 @@ class SimpleViewModel : ViewModel() {
         _input.postValue(input)
     }
 
+    private val _count = MutableLiveData<String?>()
+    val count: LiveData<String?> = _count
+
+    fun setCount(count: String?) {
+        _count.postValue(count)
+    }
+
     private fun setErrorMsg(errorMsg: String?) {
         _errorMsg.postValue(errorMsg)
     }
@@ -85,6 +92,7 @@ class SimpleViewModel : ViewModel() {
 
     fun confirmOrder() {
         if (_listMenu.value != null && _listMenu.value?.isNotEmpty() == true) {
+            setCount(_input.value)
             _listMenu.value!![0].price = BigDecimal(_input.value)
             _listMenu.value!![0].quantity = 1
             _confirmOrder.postValue(_listMenu.value)
@@ -215,7 +223,7 @@ class SimpleViewModel : ViewModel() {
     private suspend fun getTokenSign(): String? {
         var sign = ""
         withContext(Dispatchers.IO) {
-            sign = APIManager.getInstance().paymentAPI.signWithFaceToken(token.value, _input.value)
+            sign = APIManager.getInstance().paymentAPI.signWithFaceToken(token.value, _count.value)
         }
         return sign
     }

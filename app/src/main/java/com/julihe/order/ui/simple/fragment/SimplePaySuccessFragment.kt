@@ -61,7 +61,7 @@ class SimplePaySuccessFragment : Fragment() {
             binding.info.text = info
             Glide.with(activity!!).load(it.avatar).apply(RequestOptions.bitmapTransform(CircleCrop())).placeholder(R.drawable.head_normal).into(binding.icon)
         }
-        binding.tvNum.text = viewModel.input.value
+        binding.tvNum.text = viewModel.count.value
         binding.time.text = CommonUtils.formatToDate(System.currentTimeMillis())
     }
 

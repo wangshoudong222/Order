@@ -71,7 +71,7 @@ class SimplePayPresentation(outerContext: Context?, display: Display?) :
             }
         }
 
-        viewModel.input.observe(activity){
+        viewModel.count.observe(activity){
             LogUtil.d(TAG,"获取总结账为:${it?.toFloat().toString()}")
             if (it != null) {
                 binding.payNum.text = it.toFloat().toString()
