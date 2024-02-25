@@ -1,5 +1,7 @@
 package com.julihe.order.model.result
 
+import java.math.BigDecimal
+
 data class Student(
     /**
      * 头像链接
@@ -43,5 +45,5 @@ data class Student(
     /**
      * 学生编号
      */
-    val studentNo: String
+    val studentNo: String,
 )

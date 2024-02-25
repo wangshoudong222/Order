@@ -89,6 +89,7 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
                     binding.meal.visibility = View.VISIBLE
                     binding.timeLl.visibility = View.VISIBLE
                     reOrder()
+                    viewModel.reOrder()
                 }
 
                 else -> {
@@ -109,6 +110,7 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
         if(CommonUtils.getKeyIntercept(event.keyCode) && event.action == KeyEvent.ACTION_DOWN) {
             if (viewModel.state.value == COMMIT_STATE.COMMITTING || viewModel.state.value == COMMIT_STATE.SCANNING) {
                 if (event.keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                    Log.d(TAG,"KEYCODE_ESCAPE11111111")
                     reOrder()
                     viewModel.reOrder()
                     return true
@@ -121,7 +123,11 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
                 KeyEvent.KEYCODE_NUMPAD_ENTER,KeyEvent.KEYCODE_ENTER -> {
                     add()
                     viewModel.confirmOrder()
-                    viewModel.checkState(COMMIT_STATE.COMMITTING)
+                    if (viewModel.checkLimit()) {
+                        viewModel.checkState(COMMIT_STATE.CONFIRM_LIMIT)
+                    } else {
+                        viewModel.checkState(COMMIT_STATE.COMMITTING)
+                    }
                 }
                 // 删除键
                 KeyEvent.KEYCODE_DEL -> {
@@ -130,6 +136,7 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
                 }
                 // 取消键
                 KeyEvent.KEYCODE_ESCAPE -> {
+                    Log.d(TAG,"KEYCODE_ESCAPE2222222222")
                     reOrder()
                     viewModel.reOrder()
                     return true
@@ -254,6 +261,7 @@ class SimplePresentation(outerContext: Context?, display: Display?, ) :
         preInput = 0.00
         viewModel.setInput("0")
         codeInput.setLength(0)
+        viewModel.checkState(COMMIT_STATE.REORDER)
     }
 
     companion object {

@@ -9,6 +9,7 @@ object PlayVoiceManager {
     const val VOICE_ERROR = "f23"
     const val VOICE_CANCEL = "cancel"
     const val VOICE_SCAN_FACE = "start_scan_face"
+    const val CONFIRM = "pls_comfirm"
 
     fun playVoice(type: String) {
         APIManager.getInstance().voiceAPI.play(type)

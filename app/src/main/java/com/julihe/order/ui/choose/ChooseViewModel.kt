@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alibaba.fastjson.JSON
 import com.julihe.order.model.request.ConfigInfo
+import com.julihe.order.model.request.SchoolRequest
 import com.julihe.order.model.result.*
 import com.julihe.order.net.OrderRepository
 import com.julihe.order.net.model.NetResult
+import com.julihe.order.ui.simple.SimpleViewModel
 import com.julihe.order.util.LogUtil
 import com.julihe.order.util.ToastUtil
 import com.julihe.order.util.sp.SpUtil

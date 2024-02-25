@@ -37,14 +37,15 @@ import com.julihe.order.smile.PlayVoiceManager
  * 简约模式
  */
 class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener,
-    SmileManager.OnScanFaceResultListener{
+    SmileManager.OnScanFaceResultListener {
 
-    private lateinit var binding : ActivitySingleBinding
+    private lateinit var binding: ActivitySingleBinding
     private lateinit var viewModel: SimpleViewModel
     private lateinit var orderFragment: SimpleOrderFragment
     private lateinit var paySuccessFragment: SimplePaySuccessFragment
     private lateinit var payErrorFragment: SimplePayErrorFragment
     private var loadingPop: LoadingPop? = null
+    private var limitPop: LimitPop? = null
     private var mSmileManager: SmileManager? = null
     private var curPre = ORDER_PRE
 
@@ -62,6 +63,7 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         viewModel = ViewModelProvider(this).get(SimpleViewModel::class.java)
         viewModel.getCurrentMeal()
         viewModel.getConfig()
+        viewModel.getSchoolLimit()
         viewModel.checkState(COMMIT_STATE.ORDER)
         viewModel.config.observe(this) {
             if (it != null && !TextUtils.isEmpty(it.schoolName) && !TextUtils.isEmpty(it.windowName)) {
@@ -85,7 +87,7 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
                 MainThreadHandler.removeCallbacks(TAG_MEAL_ERROR)
                 MainThreadHandler.postDelayed(TAG_MEAL_ERROR, {
                     viewModel.getCurrentMeal()
-                },1000 * 60)
+                }, 1000 * 60)
             }
         }
 
@@ -103,14 +105,14 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         }
 
         viewModel.state.observe(this) {
-            when(it) {
+            when (it) {
                 COMMIT_STATE.ORDER -> {
-                    LogUtil.d(TAG,"正在点餐")
+                    LogUtil.d(TAG, "正在点餐")
                     dismissDialog()
                 }
 
                 COMMIT_STATE.REORDER -> {
-                    LogUtil.d(TAG,"重新点餐")
+                    LogUtil.d(TAG, "重新点餐")
                     viewModel.reOrder()
                     replaceFragment(orderFragment)
                     addPresentation(ORDER_PRE)
@@ -118,14 +120,20 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
                 }
 
                 COMMIT_STATE.COMMITTING -> {
-                    LogUtil.d(TAG,"正在提交")
+                    LogUtil.d(TAG, "正在提交")
                     PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_SCAN_FACE)
                     viewModel.doScan(true)
                     showDialog()
                 }
 
                 COMMIT_STATE.SCANNING -> {
-                    LogUtil.d(TAG,"正在扫脸")
+                    LogUtil.d(TAG, "正在扫脸")
+                }
+
+                COMMIT_STATE.CONFIRM_LIMIT -> {
+                    val msg = "金额过大请确认\n支付金额：" + viewModel.count.value + "元"
+                    PlayVoiceManager.playVoice(PlayVoiceManager.CONFIRM)
+                    showLimitDialog(msg)
                 }
 
                 COMMIT_STATE.SUCCESS -> {
@@ -174,7 +182,7 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
 
     private fun replaceFragment(fm: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container,fm)
+            .replace(R.id.container, fm)
             .commitAllowingStateLoss()
     }
 
@@ -199,21 +207,21 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     }
 
     private fun startScan() {
-        mSmileManager?.startSmile(TYPE,this, this, viewModel.input.value)
+        mSmileManager?.startSmile(TYPE, this, this, viewModel.input.value)
     }
 
     override fun onInstallResult(isSuccess: Boolean, errMsg: String?) {
-        LogUtil.d(TAG,if (isSuccess) "扫脸程序初始化成功" else "扫脸程序初始化失败:$errMsg")
+        LogUtil.d(TAG, if (isSuccess) "扫脸程序初始化成功" else "扫脸程序初始化失败:$errMsg")
     }
 
     override fun onVerifyResult(success: Boolean?, fToken: String?, uid: String?) {
-        LogUtil.d(TAG,if (success == true) "人脸识别成功 token:$fToken; uid:$uid" else "人脸识别失败")
+        LogUtil.d(TAG, if (success == true) "人脸识别成功 token:$fToken; uid:$uid" else "人脸识别失败")
         if (success == true) {
             viewModel.getStudentInfo(uid)
             viewModel.setToken(fToken)
         } else {
             when (fToken) {
-                CANCEL_SCAN, CANCEL_ORDER-> {
+                CANCEL_SCAN, CANCEL_ORDER -> {
                     PlayVoiceManager.playVoice(PlayVoiceManager.VOICE_CANCEL)
                 }
                 else -> {
@@ -247,22 +255,24 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
     private var orderPre: SimplePresentation? = null
     private var payPre: SimplePayPresentation? = null
 
-    private fun addPresentation(pre: String){
+    private fun addPresentation(pre: String) {
         if (pre == ORDER_PRE && (orderPre == null || orderPre?.isShowing == false)) {
-            val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
+            val mediaRouter: MediaRouter =
+                getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
             val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
             if (route != null && route.presentationDisplay != null) {
-                orderPre = SimplePresentation(this,route.presentationDisplay)
+                orderPre = SimplePresentation(this, route.presentationDisplay)
                 orderPre?.setOwnerActivity(this)
             }
             orderPre?.show()
             payPre?.dismiss()
             payPre = null
-        } else if (pre == PAY_PRE && (payPre == null || payPre?.isShowing == false)){
-            val mediaRouter: MediaRouter = getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
+        } else if (pre == PAY_PRE && (payPre == null || payPre?.isShowing == false)) {
+            val mediaRouter: MediaRouter =
+                getSystemService(Context.MEDIA_ROUTER_SERVICE) as MediaRouter
             val route = mediaRouter.getSelectedRoute(MediaRouter.ROUTE_TYPE_LIVE_AUDIO)
             if (route != null && route.presentationDisplay != null) {
-                payPre = SimplePayPresentation(this,route.presentationDisplay)
+                payPre = SimplePayPresentation(this, route.presentationDisplay)
                 payPre?.setOwnerActivity(this)
             }
             payPre?.show()
@@ -272,15 +282,38 @@ class SimpleActivity : AppCompatActivity(), SmileManager.OnInstallResultListener
         curPre = pre
     }
 
-   private fun showDialog() {
+    private fun showDialog() {
         if (loadingPop == null) {
             loadingPop = LoadingPop()
         }
-       loadingPop?.show(supportFragmentManager,"loading")
-   }
+        loadingPop?.show(supportFragmentManager, "loading")
+    }
 
     private fun dismissDialog() {
         loadingPop?.dismiss()
+    }
+
+    private fun showLimitDialog(msg: String) {
+
+        if (limitPop == null) {
+            limitPop = LimitPop(msg)
+        }
+        limitPop?.setListener {
+            dismissLimitDialog()
+            if (it == LimitPop.COMMIT) {
+                Log.d(TAG, "超限额，提交")
+                viewModel.checkState(COMMIT_STATE.COMMITTING)
+            } else {
+                Log.d(TAG, "超限额，取消重新点餐")
+                viewModel.checkState(COMMIT_STATE.REORDER)
+            }
+        }
+        limitPop?.show(supportFragmentManager, "limitPop")
+    }
+
+    private fun dismissLimitDialog() {
+        limitPop?.dismiss()
+        limitPop = null
     }
 
     companion object {

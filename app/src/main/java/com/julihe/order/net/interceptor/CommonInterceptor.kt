@@ -1,5 +1,6 @@
 package com.julihe.order.net.interceptor
 
+import com.julihe.order.util.LogUtil
 import com.julihe.order.util.sp.SpUtil
 import okhttp3.Interceptor
 import okhttp3.Request

@@ -38,7 +38,8 @@ public class SpUtil {
   }
 
   public static String token(String... token) {
-    return saveAndGet("token", String.class, token);
+    String tokenString =  saveAndGet("token", String.class, token);
+    return tokenString;
   }
 
   public static String config(String... config) {

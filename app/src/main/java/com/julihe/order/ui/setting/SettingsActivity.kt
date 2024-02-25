@@ -3,10 +3,10 @@ package com.julihe.order.ui.setting
 import android.content.Context
 import android.content.Intent
 import android.media.MediaRouter
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.julihe.order.databinding.ActivitySettingsBinding
 import com.julihe.order.ui.bind.BindActivity
@@ -45,7 +45,9 @@ class SettingsActivity : AppCompatActivity() {
         }
         binding.btnLogout.setOnClickListener {
             SpUtil.token("")
-            startActivity(Intent(this, LoginActivity::class.java))
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
             this.finish()
         }
     }

@@ -97,6 +97,9 @@ class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
         return callRequest(call = { requestStudentAccount(getRequestBody(JSON.toJSONString(request))) })
     }
 
+    suspend fun getSchoolLimit(request: SchoolRequest): NetResult<SchoolInfo?> {
+        return callRequest(call = { requestSchoolLimit(getRequestBody(JSON.toJSONString(request))) })
+    }
 
     private suspend fun requestDeviceConfig() =
         handleResponse(service.create(RequestApi::class.java).getDeviceConfig())
@@ -154,6 +157,9 @@ class OrderRepository(private val service: RetrofitClient) : BaseRepository() {
 
     private suspend fun requestStudentAccount(body: RequestBody) =
         handleResponse(service.create(RequestApi::class.java).getStudentAccount(body))
+
+    private suspend fun requestSchoolLimit(body: RequestBody) =
+        handleResponse(service.create(RequestApi::class.java).getSchoolLimit(body))
 
     private fun getRequestBody(body: String): RequestBody {
         return RequestBody.create(MediaType.parse("application/json"), body)

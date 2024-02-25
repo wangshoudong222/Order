@@ -1,6 +1,7 @@
 package com.julihe.order.ui.simple
 
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -63,6 +64,9 @@ class SimpleViewModel : ViewModel() {
     private val _input = MutableLiveData<String?>()
     val input: LiveData<String?> = _input
 
+    private val _limit = MutableLiveData<BigDecimal?>()
+    val limit: LiveData<BigDecimal?> = _limit
+
     fun setInput(input: String?) {
         _input.postValue(input)
     }
@@ -97,6 +101,16 @@ class SimpleViewModel : ViewModel() {
             _listMenu.value!![0].quantity = 1
             _confirmOrder.postValue(_listMenu.value)
         }
+    }
+
+    fun checkLimit(): Boolean {
+        val input1 =  BigDecimal(_input.value)
+        val compareToBig = compareToBig(input1, limit.value)
+        return compareToBig != null && compareToBig > 0
+    }
+
+    fun compareToBig(bigDecimal: BigDecimal?, bigDecimal2: BigDecimal?): Int? {
+        return bigDecimal?.compareTo(bigDecimal2)
     }
 
     fun doScan(boolean: Boolean) {
@@ -140,6 +154,30 @@ class SimpleViewModel : ViewModel() {
                 }
             } else if (result is NetResult.Error){
                 LogUtil.d(TAG,"getCurrentMeal ${result.exception}")
+            }
+        }
+    }
+
+    /**
+     * 获取当前学校限额
+     */
+    fun getSchoolLimit() {
+        viewModelScope.launch {
+            val result: NetResult<SchoolInfo?> = OrderRepository.instance.getSchoolLimit(
+                SchoolRequest(config.value?.schoolId))
+
+            if (result is NetResult.Success) {
+                if (result.data != null) {
+                    val schoolInfo = result.data
+                    LogUtil.d(SimpleViewModel.TAG,"getSchoolLimit ${JSON.toJSONString(schoolInfo)}")
+                    _limit.postValue(schoolInfo.limitAmount)
+                } else {
+                    LogUtil.d(SimpleViewModel.TAG,"getSchoolLimit error")
+                    _limit.postValue(BigDecimal(0))
+                }
+            } else if (result is NetResult.Error){
+                LogUtil.d(SimpleViewModel.TAG,"getCurrentMeal ${result.exception}")
+                _limit.postValue(BigDecimal(0))
             }
         }
     }

@@ -67,4 +67,7 @@ interface RequestApi {
 
     @POST("/api-jlh-bff/canteen/login")
     suspend fun login(@Body body: RequestBody): BaseModel<LoginModel?>
+
+    @POST("/api-jlh-bff/canteen/device/getSchool")
+    suspend fun getSchoolLimit(@Body body: RequestBody): BaseModel<SchoolInfo?>
 }
